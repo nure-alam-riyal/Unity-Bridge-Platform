@@ -1,7 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import useAuth from '../Hooks/useAuth';
 
 const NavBar = () => {
+    const {user}=useAuth()
     const routers=
     <>
     <li><NavLink to="/">Home</NavLink></li>
@@ -32,7 +34,15 @@ const NavBar = () => {
     </ul>
   </div>
   <div className="navbar-end">
-    <a className="btn">Button</a>
+    <div className="flex items-center gap-2">
+        { user?.email ?<div className='flex items-center gap-2'  >
+            {user?.photoURL ? <img className=' w-8 h-8 rounded-full' src={user?.photoURL} alt={user?.displayName} />:<></> }
+        <div className=' font-bold text-green-500'>{user?.displayName}</div>
+        </div>  
+        :
+        <> 
+        <div><button><NavLink to="/login">Login</NavLink></button></div></>}
+    </div>
   </div>
 </div>
         </div>
