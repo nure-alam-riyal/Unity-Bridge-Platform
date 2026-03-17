@@ -6,12 +6,15 @@ import LogInWithGoogle from '../LogInWithGoogle';
 import toast from 'react-hot-toast';
 import { FaEye, FaEyeSlash } from 'react-icons/fa6';
 import useAuth from '../../Hooks/useAuth';
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../../Redux-Toolkit/Slices/userSlice.jsx';
 
 
 
 const Registration = () => {
+    const updateData=useDispatch()
     const { createUser } = useAuth()
-    const navigate = useNavigate() 
+    const navigate = useNavigate()
     const [eye, setEye] = useState(true)
     const [error, SetError] = useState('')
     const { register, handleSubmit } = useForm();
@@ -43,28 +46,42 @@ const Registration = () => {
             SetError('Password did not match')
             return
         }
-        else{
-             createUser(email,password).then(
-                 navigate('/'),
-                toast.success("user login")
-    //   Updateprofile(name,image).then(async()=>{
-     
-    // //   console.log(info)
-    // //  await axiosPublic.post('/user',info).then(()=>{
-    // //     toast.success("user login")
-      
-    // //   })
+        else {
+                
+               
+            createUser(data?.email1, data?.password1).then(Result => {
+                // updateData(setUserData({
+                //     email:data?.email,
+                //     userName:data?.name,
+                //     role:data?.role,
+                //     NIDorBRITH:data?.NIDorBRITH,
+                //     LicenseNumber:data?.LicenseNumber
 
-      
-    // //   
-    // }
-    // )
-    // .catch(error=>{
-    //    toast.error(error.message)
-    //     })
-    )
-    .catch()
-   }
+                // }))
+                navigate('/'),
+                    toast.success("user login")
+            }
+                //   Updateprofile(name,image).then(async()=>{
+
+                // //   console.log(info)
+                // //  await axiosPublic.post('/user',info).then(()=>{
+                // //     toast.success("user login")
+
+                // //   })
+
+
+                // //   
+                // }
+                // )
+                // .catch(error=>{
+                //    toast.error(error.message)
+                //     })
+            )
+                .catch(error => {
+                    toast.error(error.message)
+                }
+                )
+        }
     }
     return (
         <div>
