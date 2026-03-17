@@ -16,7 +16,7 @@ const Login = () => {
     const { register, handleSubmit } = useForm();   
     const onSubmit = (data) => {
         console.log(data);
-        signIn(data.email, data.password).then(()=>{
+        signIn(data?.email, data?.password).then(()=>{
             toast.success("Login success")
                navigate(from, { replace: true })
         })
@@ -47,7 +47,7 @@ const Login = () => {
                                 <div>
                                     <label className="label">Password</label>
                                    <div className='relative'>
-                                                                           <input type={`${eye ? 'password' : 'text'}`}  {...register("confirmPassword")} className="input" placeholder="Password" />
+                                                                           <input type={`${eye ? 'password' : 'text'}`}  {...register("password")} className="input" placeholder="Password" />
                                                                            <div onClick={() => setEye(!eye)} className="absolute right-7 top-4">{
                                                                                eye ? <FaEye></FaEye> : <FaEyeSlash></FaEyeSlash>
                                                                            }</div>
