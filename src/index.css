@@ -1,2 +1,7 @@
 @import "tailwindcss";
 @plugin "daisyui";
+/* @theme {
+ brandBg: '#edf4ee';
+brandBlue: '#1e40af'; 
+ brandGreen: '#166534'; 
+} */

@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import NavBar from '../ShareCOmponents/NavBar'
+import Footer from '../Pages/Donor/DonorDiscoveryPortal/Footer'
 
 
 export default function MainLayOut() {
@@ -7,6 +8,7 @@ export default function MainLayOut() {
     <>
     <NavBar></NavBar>
       <Outlet></Outlet>
+      <Footer></Footer>
     </>
    
     

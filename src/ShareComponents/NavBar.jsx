@@ -1,17 +1,43 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import useAuth from '../Hooks/useAuth';
+import useQuerys from '../Hooks/useQuerys';
 
 const NavBar = () => {
-    const {user}=useAuth()
-    const routers=
-    <>
+  const {user}=useAuth()
+  const oneuser=useQuerys({users:"users"})
+ const {email,userName,image,role}=oneuser[0]||{}
+   
+    // 
+    const routers = (
+  <>
     <li><NavLink to="/">Home</NavLink></li>
     <li><NavLink to="/login">Login</NavLink></li>
+    
+    {/* 1. Show NGO link if the role matches */}
+    {role === 'NGO' && (
+      <li><NavLink to="/ngo">NGO</NavLink></li>
+    )}
+    
+    {/* 2. Show Volunteer link if the role matches */}
+    {role === 'volunteer&donar' && (
+      <li><NavLink to="/volunteer">Volunteer&Donor</NavLink></li>
+    )}
+     {role === 'admin' && (
+      <li><NavLink to="/admin">Admin</NavLink></li>
+    )}
+     {role === 'donor' && (
+       <li><NavLink to="/donor">Donor</NavLink></li>
+    )}
+    
+    <li><NavLink to="/projects">Projects</NavLink></li>
+    
+   
     <li><NavLink to="/register">Register</NavLink></li>
     <li><NavLink to="/about">About</NavLink></li>
     <li><NavLink to="/contact">Contact</NavLink></li>
-    </>
+  </>
+);
     return (
         <div>
             <div className="navbar bg-base-100 shadow-sm">
@@ -35,9 +61,9 @@ const NavBar = () => {
   </div>
   <div className="navbar-end">
     <div className="flex items-center gap-2">
-        { user?.email ?<div className='flex items-center gap-2'  >
-            {user?.photoURL ? <img className=' w-8 h-8 rounded-full' src={user?.photoURL} alt={user?.displayName} />:<></> }
-        <div className=' font-bold text-green-500'>{user?.displayName}</div>
+        { email ?<div className='flex items-center gap-2'  >
+            {image ? <img className=' w-8 h-8 rounded-full' src={image} alt={userName} />:<></> }
+        <div className=' font-bold text-green-500'>{userName}</div>
         </div>  
         :
         <> 

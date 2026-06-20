@@ -10,6 +10,8 @@ import { auth } from '../Authentication/Firebase/FireBase.jsx';
 import { useSelector } from 'react-redux';
 import toast from 'daisyui/components/toast/index.js';
 import usePublicAxios from '../Hooks/usePublicAxios.jsx';
+import { current } from '@reduxjs/toolkit';
+import { Users } from 'lucide-react';
 export const AuthContext = createContext('')
 // export const AuthContex = createContext('')
 const provider = new GoogleAuthProvider();
@@ -19,6 +21,7 @@ const provider = new GoogleAuthProvider();
 
 
 export default function AuthProvider({ children }) {
+    const [query,setQuery]=useState('')
     const userdata=useSelector(state=>state.user)
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState(null);
@@ -36,36 +39,44 @@ export default function AuthProvider({ children }) {
    
     const createUser = (email, pass) => {
         setLoading(true)
-        console.log(email, pass)
-        console.log(auth)
+       
+        
         return createUserWithEmailAndPassword(auth, email, pass)
 
     }
+   
     const signOut = () => {
 
 
     }
-    console.log(userdata)
+    
+   
+    
+
     
     useEffect(() => {
-        const unSubscribe = onAuthStateChanged(auth, (CurretUser => {
-            setUser(CurretUser)
-            // console.log(CurretUser)
+        const unSubscribe = onAuthStateChanged(auth, (Currentuser => {
+            
+            // console.log(Currentuser)
             setLoading(false)
-            if (CurretUser) {
+ 
+            if (Currentuser) {
                 const userInfo = {
-                    email: CurretUser?.email,
-                    userName: CurretUser?.displayName,
-                    image: CurretUser?.photoURL,
-                    role:userdata?.role,
+                    email: Currentuser?.email,
+                    userName: Currentuser?.displayName,
+                    image: Currentuser?.photoURL,
+                    role:userdata?.role ||'volunteer&donar',
                     NIDorBRITH:userdata?.NIDorBRITH,
                     LicenseNumber:userdata?.LicenseNumber
 
                 }
-                console.log(userInfo)
+                 
+                if(userInfo?.email&&userInfo?.userName&&userInfo?.role){
+                  setUser(userInfo)
                   axiosPublic.post('users',userInfo).then(res=>{
                     if(res.data.insertedId){
                                toast.success("user login")
+                               
                     }
                    })
                 //  axiosPublic.post('/jwt',{ email:CurretUser?.email})
@@ -76,12 +87,14 @@ export default function AuthProvider({ children }) {
                 //  })
 
             }
+        }
             //  else{
             //     localStorage.removeItem('token')
             //  }
         }))
         return () => unSubscribe()
-    }, [axiosPublic])
+    }, [axiosPublic,userdata])
+    console.log(user)
     const info = {
         signIn,
         signOut,
@@ -89,7 +102,9 @@ export default function AuthProvider({ children }) {
         signInGoogle,
         setUser,
         loading,
-        user
+        user,
+        setQuery,
+        query
     }
     return (
         <div>
