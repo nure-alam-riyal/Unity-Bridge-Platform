@@ -2,7 +2,7 @@ import React from 'react'
 import EcosystemImpact from './EcosystemImpact'
 import CallToAction from './CallToAction'
 import Hero from './Hero'
-
+// Unity-Bridge-Platform Home Section
 export default function Home() {
   return (
     <div>
