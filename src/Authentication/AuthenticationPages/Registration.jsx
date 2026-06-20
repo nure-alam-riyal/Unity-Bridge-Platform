@@ -48,16 +48,16 @@ const Registration = () => {
         }
         else {
                 
-               
-            createUser(data?.email1, data?.password1).then(Result => {
-                // updateData(setUserData({
-                //     email:data?.email,
-                //     userName:data?.name,
-                //     role:data?.role,
-                //     NIDorBRITH:data?.NIDorBRITH,
-                //     LicenseNumber:data?.LicenseNumber
+               console.log(data)
+            createUser(data?.email, data?.password).then(Result => {
+                updateData(setUserData({
+                    email:data?.email,
+                    userName:data?.name,
+                    role:data?.role,
+                    NIDorBRITH:data?.NIDorBRITH,
+                    LicenseNumber:data?.LicenseNumber
 
-                // }))
+                }))
                 navigate('/'),
                     toast.success("user login")
             }
@@ -83,6 +83,7 @@ const Registration = () => {
                 )
         }
     }
+
     return (
         <div>
             <div className="hero bg-base-200 min-h-screen">
@@ -110,13 +111,13 @@ const Registration = () => {
 
                                         <div>
 
-                                            <input type="radio"  {...register("role")} value='volunteer' className="radio radio-info radio-sm mr-1.5" defaultChecked />
-                                            <label htmlFor="">Volunteer</label>
+                                            <input type="radio"  {...register("role")} value='volunteer&donar' className="radio radio-info radio-sm mr-1.5" defaultChecked />
+                                            <label htmlFor="">Volunteer and Donor</label>
                                         </div>
                                         <div>
 
-                                            <input type="radio"  {...register("role")} value="dontar" className="radio radio-info radio-sm mr-1.5" />
-                                            <label htmlFor="">Dontar</label>
+                                            <input type="radio"  {...register("role")} value="donar" className="radio radio-info radio-sm mr-1.5" />
+                                            <label htmlFor="">Only Donar</label>
                                         </div>
                                         <div>
 
@@ -132,10 +133,10 @@ const Registration = () => {
                                     <label className="label">NID/BRITH Number</label>
                                     <input type="number" className="input" {...register("NIDorBRITH")} placeholder="NIDorBRITH" />
                                 </div>
-                                <div>
+                                {/* <div>
                                     <label className="label"> License Number</label>
                                     <input type="text" className="input" {...register("LicenseNumber")} placeholder="License Number" />
-                                </div>
+                                </div> */}
                                 <div>
                                     <label className="label">Password</label>
                                     <div className='relative'>
