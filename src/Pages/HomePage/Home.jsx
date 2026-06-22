@@ -1,21 +1,25 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Hero from './Hero';
 import EcosystemImpact from './EcosystemImpact';
 import CallToAction from './CallToAction';
+import React from 'react'
+import EcosystemImpact from './EcosystemImpact'
+import CallToAction from './CallToAction'
+import Hero from './Hero'
 
-const fadeInUp = {
-  hidden: { opacity: 0, y: 50 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } }
-};
-
-const staggerContainer = {
+export default function Home() {
+  const staggerContainer = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
 };
-
-export default function Home() {
+  
+  const fadeInUp = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } }
+};
   return (
     <div className="bg-slate-50 min-h-screen overflow-x-hidden selection:bg-emerald-500 selection:text-white pt-1">
       
