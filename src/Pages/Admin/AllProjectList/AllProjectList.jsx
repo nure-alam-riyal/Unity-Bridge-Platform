@@ -15,25 +15,25 @@ const AllProjectList = () => {
   const [rejectReason, setRejectReason] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // Pagination States
+  
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  // 1. Fetch all projects globally
+
   const { data: projects = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['allGlobalProjectsAdminData'],
     queryFn: () => axios.get('projects').then(res => res.data)
   });
 
-  // 2. CRITICAL FILTER: Filter out all projects that are currently drafts
+ 
   const filteredProjects = projects.filter(project => project?.status !== 'draft');
 
-  // 3. Client-side pagination logic using the filtered list
+  
   const indexOfLastItem = currentPage * pageSize;
   const indexOfFirstItem = indexOfLastItem - pageSize;
   const currentProjects = filteredProjects.slice(indexOfFirstItem, indexOfLastItem);
 
-  // 4. Core status update handler
+  
   const handleProjectStatus = async (projectId, newStatus, reason = '') => {
     setIsUpdating(true);
     try {
@@ -56,7 +56,7 @@ const AllProjectList = () => {
     }
   };
 
-  // Helper mapping function for live status colors
+ 
   const getStatusTag = (status) => {
     if (status === 'verified') return <Tag color="success" className="uppercase font-bold">Verified</Tag>;
     if (status === 'rejected') return <Tag color="error" className="uppercase font-bold">Rejected</Tag>;
@@ -87,7 +87,7 @@ const AllProjectList = () => {
           </div>
         </div>
 
-        {/* Dynamic Table Layout */}
+        
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -138,7 +138,7 @@ const AllProjectList = () => {
                         {getStatusTag(currentStatus)}
                       </td>
 
-                      {/* Action Matrix Buttons */}
+                      
                       <td className="p-4 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <Button 
@@ -176,7 +176,7 @@ const AllProjectList = () => {
           </table>
         </div>
 
-        {/* --- PAGINATION INTERFACE FOOTER CONTROL PANEL --- */}
+        
         {filteredProjects.length > 0 && (
           <div className="p-4 bg-white border-t border-slate-100 flex items-center justify-center sm:justify-end">
             <Pagination
@@ -192,7 +192,7 @@ const AllProjectList = () => {
         )}
       </div>
 
-      {/* Details Drawer Overlay */}
+     
       <ProjectDetails 
         visible={isModalOpen}
         onClose={() => {
@@ -202,7 +202,7 @@ const AllProjectList = () => {
         projectData={activeProject}
       />
 
-      {/* Admin Rejection Reason Prompt Modal */}
+     
       <Modal
         title={<span className="text-base font-bold text-red-600">State Reason for Project Rejection</span>}
         open={isRejectModalOpen}

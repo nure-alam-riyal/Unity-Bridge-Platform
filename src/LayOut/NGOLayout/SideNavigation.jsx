@@ -183,7 +183,7 @@ export default function SideNavigation() {
       { label: 'Dashboard', path: '/ngo', icon: <HiOutlineSquares2X2 size={20} /> },
       { label: 'Impact Tracking', path: '/ngo/impact-tracking', icon: <HiOutlinePresentationChartLine size={20} /> },
       { label: 'Our Projects', path: '/ngo/projects', icon: <HiOutlineClipboardDocumentList size={20} /> },
-      { label: 'Donor Relations', path: '/ngo/donor-relations', icon: <HiOutlineHeart size={20} /> },
+      { label: 'Donor Relations', path: '/ngo/donor-relation', icon: <HiOutlineHeart size={20} /> },
       { label: 'Volunteer Hub', path: '/ngo/volunteer', icon: <HiOutlineUserGroup size={20} /> },
     ],
     'volunteer&donor': [
