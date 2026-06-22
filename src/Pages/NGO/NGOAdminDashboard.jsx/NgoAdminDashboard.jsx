@@ -7,15 +7,23 @@ import {
   ProjectOutlined, 
   DollarCircleOutlined 
 } from '@ant-design/icons';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
-
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import usePublicAxios from '../../../Hooks/usePublicAxios';
+import { FaBangladeshiTakaSign } from 'react-icons/fa6';
+
+const formatCompactNumber = (number) => {
+  if (number == null || isNaN(number)) return '0';
+  return new Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    compactDisplay: 'short',
+    maximumFractionDigits: 1
+  }).format(number);
+};
 
 export default function NgoAdminDashboard() {
   const axios = usePublicAxios();
 
-  // 1. Fetch live metrics & charts data securely from your database backend 
   const { data: dashboardData, isLoading } = useQuery({
     queryKey: ['ngoDashboardStats'],
     queryFn: async () => {
@@ -24,7 +32,6 @@ export default function NgoAdminDashboard() {
     }
   });
 
-  // Fallback structural mock schemas for instant visualization if your backend endpoint is raw or empty
   const stats = dashboardData?.stats || {
     totalDonations: 48250,
     activeVolunteers: 142,
@@ -52,7 +59,7 @@ export default function NgoAdminDashboard() {
       title: 'BUDGET',
       dataIndex: 'budget',
       key: 'budget',
-      render: (val) => <span className="font-mono text-xs">${val.toLocaleString()}</span>
+      render: (val) => <span className="font-mono text-xs">${formatCompactNumber(val)}</span>
     },
     {
       title: 'STATUS',
@@ -82,7 +89,6 @@ export default function NgoAdminDashboard() {
   return (
     <div className="p-4 md:p-8 bg-slate-50 min-h-screen space-y-8 select-none">
       
-      {/* HEADER ROW BAR WITH BRAND IDENTITY */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-200/60 pb-5">
         <div>
           <h1 className="text-2xl font-black text-slate-800 tracking-tight m-0">NGO Workspace Dashboard</h1>
@@ -93,16 +99,15 @@ export default function NgoAdminDashboard() {
         </Tag>
       </div>
 
-      {/* 4 CORE METRIC OVERVIEW CARDS */}
       <Row gutter={[20, 20]}>
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-sm hover:shadow-md border-none rounded-xl bg-white transition-all duration-300">
             <Statistic
-              title={<span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Funds Raised</span>}
+              title={<span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Funds Raised </span>}
               value={stats.totalDonations}
-              precision={2}
+              formatter={(value) => `${formatCompactNumber(value)}`}
               valueStyle={{ color: '#0D623B', fontWeight: 900, fontSize: '24px' }}
-              prefix={<DollarCircleOutlined className="mr-1 text-emerald-600" />}
+              prefix={<FaBangladeshiTakaSign className="mr-1 text-emerald-600" />}
               suffix={<span className="text-xs text-emerald-500 font-medium"><ArrowUpOutlined /> +12%</span>}
             />
           </Card>
@@ -113,6 +118,7 @@ export default function NgoAdminDashboard() {
             <Statistic
               title={<span className="text-xs font-bold uppercase tracking-wider text-slate-400">Active Volunteers</span>}
               value={stats.activeVolunteers}
+              formatter={(value) => formatCompactNumber(value)}
               valueStyle={{ color: '#1E293B', fontWeight: 900, fontSize: '24px' }}
               prefix={<UserOutlined className="mr-1 text-blue-500" />}
             />
@@ -124,6 +130,7 @@ export default function NgoAdminDashboard() {
             <Statistic
               title={<span className="text-xs font-bold uppercase tracking-wider text-slate-400">Deployed Projects</span>}
               value={stats.runningProjects}
+              formatter={(value) => formatCompactNumber(value)}
               valueStyle={{ color: '#1E293B', fontWeight: 900, fontSize: '24px' }}
               prefix={<ProjectOutlined className="mr-1 text-indigo-500" />}
             />
@@ -135,6 +142,7 @@ export default function NgoAdminDashboard() {
             <Statistic
               title={<span className="text-xs font-bold uppercase tracking-wider text-slate-400">Impact Reached</span>}
               value={stats.impactReached}
+              formatter={(value) => formatCompactNumber(value)}
               valueStyle={{ color: '#0D623B', fontWeight: 900, fontSize: '24px' }}
               prefix={<HeartOutlined className="mr-1 text-rose-500" />}
               suffix={<span className="text-xs text-slate-400 font-normal"> souls</span>}
@@ -143,9 +151,7 @@ export default function NgoAdminDashboard() {
         </Col>
       </Row>
 
-      {/* GRAPH CHART INFRASTRUCTURE ROWS */}
       <Row gutter={[20, 20]}>
-        {/* Donation Trends Flow Chart Area */}
         <Col xs={24} lg={16}>
           <Card title={<span className="text-sm font-extrabold text-slate-700">Financial Funding & Operational Impact Curve</span>} className="shadow-sm border-none rounded-xl bg-white h-full">
             <div className="w-full h-80">
@@ -159,16 +165,18 @@ export default function NgoAdminDashboard() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
                   <XAxis dataKey="month" tickLine={false} style={{ fontSize: '11px', fill: '#94A3B8' }} />
-                  <YAxis tickLine={false} style={{ fontSize: '11px', fill: '#94A3B8' }} />
-                  <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />
-                  <Area type="monotone" dataKey="donations" name="Donations ($)" stroke="#0D623B" strokeWidth={2.5} fillOpacity={1} fill="url(#colorDonations)" />
+                  <YAxis tickLine={false} tickFormatter={formatCompactNumber} style={{ fontSize: '11px', fill: '#94A3B8' }} />
+                  <Tooltip 
+                    formatter={(value) => [`$${value.toLocaleString()}`, 'Donations']}
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} 
+                  />
+                  <Area type="monotone" dataKey="donations" stroke="#0D623B" strokeWidth={2.5} fillOpacity={1} fill="url(#colorDonations)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </Card>
         </Col>
 
-        {/* Categorical Distribution Bar Chart Column */}
         <Col xs={24} lg={8}>
           <Card title={<span className="text-sm font-extrabold text-slate-700">Beneficiary Reach Tracking</span>} className="shadow-sm border-none rounded-xl bg-white h-full">
             <div className="w-full h-80">
@@ -176,9 +184,12 @@ export default function NgoAdminDashboard() {
                 <BarChart data={chartData} margin={{ top: 10, right: 5, left: -25, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
                   <XAxis dataKey="month" tickLine={false} style={{ fontSize: '11px', fill: '#94A3B8' }} />
-                  <YAxis tickLine={false} style={{ fontSize: '11px', fill: '#94A3B8' }} />
-                  <Tooltip contentStyle={{ borderRadius: '8px', border: 'none' }} />
-                  <Bar dataKey="reached" name="People Assisted" fill="#365CCE" radius={[4, 4, 0, 0]} />
+                  <YAxis tickLine={false} tickFormatter={formatCompactNumber} style={{ fontSize: '11px', fill: '#94A3B8' }} />
+                  <Tooltip 
+                    formatter={(value) => [value.toLocaleString(), 'People Assisted']}
+                    contentStyle={{ borderRadius: '8px', border: 'none' }} 
+                  />
+                  <Bar dataKey="reached" fill="#365CCE" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -186,7 +197,6 @@ export default function NgoAdminDashboard() {
         </Col>
       </Row>
 
-      {/* LOWER DATA MATRIX SEGMENTATION TABLE */}
       <Card title={<span className="text-sm font-extrabold text-slate-700">Active Operational Projects Portfolio</span>} className="shadow-sm border-none rounded-xl bg-white overflow-hidden">
         {recentProjects.length > 0 ? (
           <Table 

@@ -25,6 +25,10 @@ import Sattings from "../components/Sattings/Sattings.jsx";
 import EditProfile from "../components/Sattings/EditProfile.jsx";
 import VolunteerDonorDashboard from "../Pages/Volunteer/VolunteerDashboard/VolunteerDonorDashboard.jsx";
 import AdminDashboard from "../Pages/Admin/AminDashboard/AdminDashBoard.jsx";
+import Contact from "../Pages/Contact/Contact.jsx";
+import NotFound from "../Pages/NotFound/NotFound.jsx";
+import DonorRelation from "../Pages/NGO/DonorRelation/DonorRelation.jsx";
+
 
 export const router = createBrowserRouter([
     {
@@ -73,6 +77,9 @@ export const router = createBrowserRouter([
                     },{
                         path:"/ngo/settings/edit",
                         element:<EditProfile></EditProfile>
+                    },{
+                        path:"/ngo/donor-relation",
+                        element:<DonorRelation></DonorRelation>
                     }
                     
                 ]
@@ -142,6 +149,13 @@ export const router = createBrowserRouter([
     {
         path: "/about",
         element: <About></About>
+    },
+    {
+        path:'/contact',
+        element:<Contact></Contact>
+    },{
+        path:"*",
+        element:<NotFound></NotFound>
     }
 
 

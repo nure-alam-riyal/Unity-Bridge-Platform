@@ -19,7 +19,7 @@ import Loading from '../../../components/Loading';
 export default function AdminDashboard() {
   const axios = usePublicAxios();
 
-  // 1. Fetch live administrative statistics securely from your database backend
+ 
   const { data: adminData, isLoading } = useQuery({
     queryKey: ['adminDashboardStats'],
     queryFn: async () => {
@@ -29,7 +29,7 @@ export default function AdminDashboard() {
   });
 
   console.log(adminData)
-  // Balanced database collection fallback counts 
+ 
   const counters = adminData?.counters || {
     totalUsers: 1250,
     ngoCount: 42,
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* COMPREHENSIVE COLLECTIONCOUNTERS MATRIX GRID */}
+      
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
           <Card className="shadow-sm border-none rounded-xl bg-white">
@@ -168,9 +168,9 @@ export default function AdminDashboard() {
         </Col>
       </Row>
 
-      {/* PLATFORM CHARTS & COMPOSITION METRICS */}
+     
       <Row gutter={[20, 20]}>
-        {/* Donation Funding Area Curve */}
+       
         <Col xs={24} lg={14}>
           <Card title={<span className="text-sm font-extrabold text-slate-700">Platform Cross-Collection Funding Growth</span>} className="shadow-sm border-none rounded-xl bg-white">
             <div className="w-full h-72">

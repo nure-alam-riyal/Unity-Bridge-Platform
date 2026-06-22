@@ -4,7 +4,9 @@ import {
     GoogleAuthProvider,
     onAuthStateChanged,
     signInWithEmailAndPassword,
-    signInWithPopup
+    signInWithPopup,
+    signOut,
+    updateProfile
 } from 'firebase/auth';
 import { auth } from '../Authentication/Firebase/FireBase.jsx';
 import { useSelector } from 'react-redux';
@@ -44,10 +46,18 @@ export default function AuthProvider({ children }) {
         return createUserWithEmailAndPassword(auth, email, pass)
 
     }
+
+   const Updateprofile= async(name,photo)=>{
+    setLoading(false)
+      return  updateProfile(auth.currentUser,{
+        displayName:name,
+        
+ })
+}
    
-    const signOut = () => {
-
-
+     const LogOut = () => {
+        setLoading(true)
+        return signOut(auth)
     }
     
    
@@ -63,14 +73,14 @@ export default function AuthProvider({ children }) {
             if (Currentuser) {
                 const userInfo = {
                     email: Currentuser?.email,
-                    userName: Currentuser?.displayName,
+                    userName: Currentuser?.displayName || userdata?.userName || "Unknown",
                     image: Currentuser?.photoURL,
-                    role:userdata?.role ||'volunteer&donar',
+                    role:userdata?.role ||'volunteer&donor',
                     NIDorBRITH:userdata?.NIDorBRITH,
                     LicenseNumber:userdata?.LicenseNumber
 
                 }
-                 
+                 console.log(userInfo)
                 if(userInfo?.email&&userInfo?.userName&&userInfo?.role){
                   setUser(userInfo)
                   axiosPublic.post('users',userInfo).then(res=>{
@@ -104,7 +114,9 @@ export default function AuthProvider({ children }) {
         loading,
         user,
         setQuery,
-        query
+        query,
+        updateProfile,
+        LogOut
     }
     return (
         <div>
