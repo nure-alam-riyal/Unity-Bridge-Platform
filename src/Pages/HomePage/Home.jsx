@@ -1,14 +1,10 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import Hero from './Hero';
-import EcosystemImpact from './EcosystemImpact';
-import CallToAction from './CallToAction';
-import React from 'react'
-import EcosystemImpact from './EcosystemImpact'
-import CallToAction from './CallToAction'
+import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import Hero from './Hero'
+import EcosystemImpact from './EcosystemImpact'
+import CallToAction from './CallToAction';
 
 export default function Home() {
   const staggerContainer = {

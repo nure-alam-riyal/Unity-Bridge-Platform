@@ -1,9 +1,12 @@
 import axios from 'axios';
 import React from 'react';
 const publicAxios= axios.create({
-  baseURL: "http://localhost:5050",
+  // baseURL: "http://localhost:5050",
+   baseURL: "https://unity-bridge-platform-backend.vercel.app",
 //   timeout: 1000,
 //   headers: { "X-Custom-Header": "foobar" },
+
+
 });
 const usePublicAxios = () => {
     return publicAxios;
