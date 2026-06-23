@@ -67,6 +67,10 @@ export default function ProjectCard({ project, user }) {
         centered
         destroyOnClose
       >
+
+
+
+        
         <div className="space-y-4 pt-2">
           <div className="text-center bg-emerald-50 border border-emerald-100 py-3 rounded-xl">
             <span className="text-[10px] font-extrabold text-emerald-600 uppercase block tracking-wider">Payable Amount</span>
