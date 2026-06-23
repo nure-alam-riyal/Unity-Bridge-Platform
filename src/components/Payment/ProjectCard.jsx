@@ -59,6 +59,7 @@ export default function ProjectCard({ project, user }) {
         </div>
       </Card>
 
+
       <Modal
         title={<div className="text-sm font-black text-slate-800">Secure Platform Contribution</div>}
         open={isOpen}
