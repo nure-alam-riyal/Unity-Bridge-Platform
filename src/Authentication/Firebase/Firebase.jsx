@@ -12,14 +12,6 @@ const firebaseConfig = {
 //   storageBucket:import.meta.env.VITE_storageBucket,
 //   messagingSenderId:import.meta.env.VITE_messagingSenderId,
 //   appId:import.meta.env.VITE_appId 
-
-
-
-
-
-
-
-
  apiKey:import.meta.env.VITE_APIKEY, 
   authDomain:import.meta.env.VITE_AUTHDOMAIN, 
   projectId:import.meta.env.VITE_projectId, 
