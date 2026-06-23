@@ -13,13 +13,18 @@ const firebaseConfig = {
 //   messagingSenderId:import.meta.env.VITE_messagingSenderId,
 //   appId:import.meta.env.VITE_appId 
 
-
-apiKey:"AIzaSyCw6-803DcGXegdQRTzSAo-DF7Ro96rG5c",
-authDomain:"unitybridgeplatform.firebaseapp.com",
-projectId:"unitybridgeplatform",
-storageBucket:"unitybridgeplatform.firebasestorage.app",
-messagingSenderId:"80455951030",
-appId:"1:80455951030:web:6c733c440bced6cdbe7c17"
+ apiKey:import.meta.env.VITE_APIKEY, 
+  authDomain:import.meta.env.VITE_AUTHDOMAIN, 
+  projectId:import.meta.env.VITE_projectId, 
+  storageBucket:import.meta.env.VITE_storageBucket, 
+  messagingSenderId:import.meta.env.VITE_messagingSenderId, 
+  appId:import.meta.env.VITE_appId, 
+// apiKey:"AIzaSyCw6-803DcGXegdQRTzSAo-DF7Ro96rG5c",
+// authDomain:"unitybridgeplatform.firebaseapp.com",
+// projectId:"unitybridgeplatform",
+// storageBucket:"unitybridgeplatform.firebasestorage.app",
+// messagingSenderId:"80455951030",
+// appId:"1:80455951030:web:6c733c440bced6cdbe7c17"
 };
 
 // Initialize Firebase
