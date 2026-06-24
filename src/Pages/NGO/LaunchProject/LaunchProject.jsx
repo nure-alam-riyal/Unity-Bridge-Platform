@@ -1,18 +1,19 @@
-
 import React, { useState } from 'react';
 import { Form, Input, InputNumber, Button, Upload, Tag, message } from 'antd';
 import { CalendarOutlined, DollarOutlined, UploadOutlined, TeamOutlined } from '@ant-design/icons';
 import useAuth from '../../../Hooks/useAuth';
 import usePublicAxios from '../../../Hooks/usePublicAxios';
+import { useImage } from '../../../Hooks/useImage'; 
 
 export default function LaunchProject() {
   const axiosPublic = usePublicAxios();
   const { user } = useAuth();
   const [form] = Form.useForm();
   
-  const [skills, setSkills] = useState([]); // Fixed: Initiated empty to avoid empty string tags
+  const [skills, setSkills] = useState([]); 
   const [skillInput, setSkillInput] = useState('');
-  const [submitType, setSubmitType] = useState('publish'); // Tracks 'draft' vs 'publish'
+  const [submitType, setSubmitType] = useState('publish'); 
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Handle adding new custom skill tags
   const handleSkillKeyDown = (e) => {
@@ -30,21 +31,54 @@ export default function LaunchProject() {
     setSkills(skills.filter(skill => skill !== removedSkill));
   };
 
-  // Unified Form Submit Handler (Handles both Draft creation and Live Publishing)
+  
+  const handleBeforeUpload = (file) => {
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error(`${file.name}`);
+      return Upload.LIST_IGNORE;
+    }
+    return false; 
+  };
+
+  // Unified Form Submit Handler
   const onFinish = async (values) => {
+    setIsSubmitting(true);
+    let uploadedImageUrls = [];
+
     try {
+    console.log( values.media.length)
+      if ( values.media.length > 0) {
+        message.loading({ content: 'Uploading project images to ImgBB...', key: 'uploading' });
+        
+        console.log(values?.media?.fileList)
+      const uploadPromises = values?.media.map(async(file) =>{
+      return await useImage(file.originFileObj)
+     
+      
+      });
+      console.log(uploadPromises)
+        uploadedImageUrls = await uploadPromises;
+        
+        message.success({ content: 'All images uploaded successfully!', key: 'uploading', duration: 2 });
+      }
+
+      // Destructure media out so we don't send the raw AntD file object to the backend
+      const { media, ...restValues } = values;
+
       const finalPayload = {
-        ...values,
+        ...restValues,
+        projectImages: uploadedImageUrls.length > 0 ? uploadedImageUrls : '', // URLs Array
         requiredSkills: skills,
         status: submitType === 'draft' ? 'draft' : 'published',
         ngoEmail: user?.email,
-        ngoName: user?.userName || user?.displayName, // Account for potential auth variant schemas
+        ngoName: user?.userName || user?.displayName, 
         date: new Date().toISOString()
       };
 
       console.log(`Submitting (${submitType.toUpperCase()}):`, finalPayload);
 
-      const res = await axiosPublic.post('projects', finalPayload);
+      // const res = await axiosPublic.post('projects', finalPayload);
 
       if (res.data.insertedId) {
         if (submitType === 'draft') {
@@ -53,7 +87,6 @@ export default function LaunchProject() {
           message.success('Project has been published live successfully!');
         }
         
-        // Reset form inputs and clear active tag arrays upon successful submission
         form.resetFields();
         setSkills([]);
       } else {
@@ -62,6 +95,8 @@ export default function LaunchProject() {
     } catch (error) {
       console.error("Error creating project:", error);
       message.error('An error occurred while creating the project.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -161,23 +196,23 @@ export default function LaunchProject() {
             </div>
           </div>
 
-          {/* SECTION 3: Project Media */}
+          {/* SECTION 3: Project Media (Multiple Upload & 2MB Limit) */}
           <div>
             <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-2 mb-4">
               Project Media
             </h3>
-            <Form.Item name="media">
+            <Form.Item name="media" valuePropName="fileList" getValueFromEvent={e => Array.isArray(e) ? e : e?.fileList}>
               <Upload.Dragger 
-                multiple 
+                multiple={true} 
                 listType="picture"
-                beforeUpload={() => false}
+                beforeUpload={handleBeforeUpload} 
                 className="bg-[#F7FAF8] border-[#E2E8E4] rounded-xl p-4"
               >
                 <p className="ant-upload-drag-icon text-2xl text-[#2A7F62]">
                   <UploadOutlined />
                 </p>
-                <p className="ant-upload-text text-sm font-semibold text-slate-700">Click or drag images to this area</p>
-                <p className="ant-upload-hint text-xs text-slate-400">Upload 1 or more banner pictures supporting your verification framework.</p>
+                <p className="ant-upload-text text-sm font-semibold text-slate-700">Click or drag banner images to this area</p>
+                <p className="ant-upload-hint text-xs text-slate-400">You can upload multiple pictures supporting your project. Max size: 2MB per image.</p>
               </Upload.Dragger>
             </Form.Item>
           </div>
@@ -228,6 +263,7 @@ export default function LaunchProject() {
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
             <Button 
               htmlType="submit"
+              disabled={isSubmitting}
               onClick={() => setSubmitType('draft')}
               className="h-11 px-6 border-[#365CCE] text-[#365CCE] font-semibold rounded-lg hover:text-[#25419A] hover:border-[#25419A]"
             >
@@ -236,6 +272,7 @@ export default function LaunchProject() {
             <Button 
               type="primary" 
               htmlType="submit"
+              loading={isSubmitting}
               onClick={() => setSubmitType('publish')}
               className="h-11 px-6 bg-[#0D623B] hover:bg-[#09472A] border-none text-white font-semibold rounded-lg shadow-none"
             >

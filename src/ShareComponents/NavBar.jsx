@@ -3,22 +3,14 @@ import { NavLink, Link } from 'react-router-dom';
 import useAuth from '../Hooks/useAuth';
 import useQuerys from '../Hooks/useQuerys';
 import toast from 'react-hot-toast';
+import LogOut from '../Authentication/AuthenticationPages/LogOut.jsx';
 
 const NavBar = () => {
-  const { user, LogOut } = useAuth(); 
+  const { user } = useAuth(); 
   const oneuser = useQuerys({ users: "users" });
   const { email, userName, image, role } = oneuser[0] || {};
 
- 
-  const handleLogOut = () => {
-    if (LogOut) {
-      LogOut()
-        .then(() => {toast("log out successful")})
-        .catch((err) => console.log(err));
-    }
-  };
 
- 
   const routers = (
     <>
       <li><NavLink to="/">Home</NavLink></li>
@@ -120,12 +112,7 @@ const NavBar = () => {
                 </li> */}
                 
                 <li>
-                  <button 
-                    onClick={handleLogOut} 
-                    className="py-2 text-rose-600 font-bold hover:bg-rose-50 rounded-xl"
-                  >
-                    Sign Out
-                  </button>
+                 <LogOut></LogOut>
                 </li>
               </ul>
             </div>

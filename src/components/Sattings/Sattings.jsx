@@ -20,7 +20,7 @@ const oneuser=useQuerys({users:"users"})
     skills: oneuser[0]?.skills||user?.skills ||[],
     education: oneuser[0]?.education||user?.education || 'No educational history configured.'
   };
-
+console.log(profile)
   return (
     <div className="p-4 md:p-8 bg-slate-50 min-h-screen">
       <div className="w-full max-w-2xl mx-auto space-y-6">

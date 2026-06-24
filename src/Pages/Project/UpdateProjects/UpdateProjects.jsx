@@ -11,6 +11,7 @@ import usePublicAxios from '../../../Hooks/usePublicAxios';
 import Loading from '../../../components/Loading';
 import { useParams } from 'react-router-dom';
 import useAuth from '../../../Hooks/useAuth';
+import { useImage } from '../../../Hooks/useImage'; // useImage ইম্পোর্ট করা হলো
 
 export default function UpdateProjects() {
   const { user } = useAuth();
@@ -20,8 +21,8 @@ export default function UpdateProjects() {
   
   const [skills, setSkills] = useState([]);
   const [skillInput, setSkillInput] = useState('');
-  // Track which button clicked: 'draft' or 'publish'
   const [submitType, setSubmitType] = useState('publish'); 
+  const [isSubmitting, setIsSubmitting] = useState(false); // সাবমিট লোডিং স্টেট
 
   // Fetch individual project data payload 
   const { data, isLoading } = useQuery({
@@ -46,6 +47,16 @@ export default function UpdateProjects() {
     return <Loading />;
   }
 
+  // Max 2MB image size handler
+  const handleBeforeUpload = (file) => {
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error(`${file.name} ফাইলটি ২MB এর চেয়ে বড়!`);
+      return Upload.LIST_IGNORE;
+    }
+    return false; 
+  };
+
   // Handle adding custom skill tokens on Enter keypress
   const handleSkillKeyDown = (e) => {
     if (e.key === 'Enter' && skillInput.trim()) {
@@ -64,15 +75,40 @@ export default function UpdateProjects() {
 
   // Unified Submit Handler for handling both Draft updates and Live Publishing
   const onFinish = async (values) => {
+    setIsSubmitting(true);
+    let uploadedImageUrls = [];
+
     try {
+      
+      if ( values.media.length > 0) {
+        message.loading({ content: 'Uploading new project images...', key: 'uploading' });
+        
+        const uploadPromises = values.media.map(async (file) => {
+          return await useImage(file.originFileObj);
+        });
+
+        uploadedImageUrls = await Promise.all(uploadPromises);
+        message.success({ content: 'All new images uploaded successfully!', key: 'uploading', duration: 2 });
+      }
+
+      const { media, ...restValues } = values;
+
+     
+      const finalImages = uploadedImageUrls.length > 0 
+        ? uploadedImageUrls 
+        : (data?.projectImages || ['https://thumbs.dreamstime.com/b/pure-clean-drinking-water-nature-drinkable-fresh-clean-water-sources-119206462.jpg']);
+
       const updatedPayload = {
-        ...values,
+        ...restValues,
+        projectImages: finalImages,
         requiredSkills: skills,
         ngoEmail: user?.email,
-        ngoName: user?.userName || user?.displayName, // Fallback support
+        ngoName: user?.userName || user?.displayName, 
         lastUpdated: new Date().toISOString(),
         status: submitType === 'draft' ? 'draft' : 'published' 
       };
+
+      console.log(`Updating (${submitType.toUpperCase()}):`, updatedPayload);
 
       // Send updates to the specific document ID via PUT request
       const res = await axios.put(`projects/${id}`, updatedPayload);
@@ -89,6 +125,8 @@ export default function UpdateProjects() {
     } catch (error) {
       console.error(error);
       message.error('An error occurred while saving project alterations.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -186,23 +224,23 @@ export default function UpdateProjects() {
             </div>
           </div>
 
-          {/* SECTION 3: Project Media */}
+          {/* SECTION 3: Project Media (Multiple Upload & 2MB limit  */}
           <div>
             <h3 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2 mb-4">
               Project Media
             </h3>
-            <Form.Item name="media">
+            <Form.Item name="media" valuePropName="fileList" getValueFromEvent={e => Array.isArray(e) ? e : e?.fileList}>
               <Upload.Dragger
                 multiple
                 listType="picture"
-                beforeUpload={() => false}
+                beforeUpload={handleBeforeUpload}
                 className="bg-[#F7FAF8] border-[#E2E8E4] rounded-xl p-4"
               >
                 <p className="ant-upload-drag-icon text-2xl text-[#2A7F62]">
                   <UploadOutlined />
                 </p>
                 <p className="ant-upload-text text-sm font-semibold text-slate-700">Click or drag images to this area</p>
-                <p className="ant-upload-hint text-xs text-slate-400">Upload new layout gallery images to replace or add to assets.</p>
+                <p className="ant-upload-hint text-xs text-slate-400">Upload new layout gallery images to replace or add to assets. Max size: 2MB per image.</p>
               </Upload.Dragger>
             </Form.Item>
           </div>
@@ -252,6 +290,7 @@ export default function UpdateProjects() {
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
             <Button
               htmlType="submit"
+              disabled={isSubmitting}
               onClick={() => setSubmitType('draft')}
               className="h-11 px-6 border-[#365CCE] text-[#365CCE] font-semibold rounded-lg hover:text-[#25419A] hover:border-[#25419A]"
             >
@@ -260,6 +299,7 @@ export default function UpdateProjects() {
             <Button
               type="primary"
               htmlType="submit"
+              loading={isSubmitting}
               onClick={() => setSubmitType('publish')}
               className="h-11 px-6 bg-[#0D623B] hover:bg-[#09472A] border-none text-white font-semibold rounded-lg shadow-none"
             >

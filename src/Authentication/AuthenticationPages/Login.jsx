@@ -19,7 +19,8 @@ const Login = () => {
     signIn(data?.email, data?.password)
       .then(() => {
         toast.success("Welcome back! Login success");
-        navigate(from, { replace: true });
+        // navigate(from, { replace: true });
+         navigate('/'); 
       })
       .catch((error) => {
         toast.error(error.message);
