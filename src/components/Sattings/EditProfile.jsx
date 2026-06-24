@@ -5,15 +5,18 @@ import { UserOutlined, MailOutlined, IdcardOutlined, BookOutlined, TrophyOutline
 import useAuth from '../../Hooks/useAuth';
 import usePublicAxios from '../../Hooks/usePublicAxios';
 import useQuerys from '../../Hooks/useQuerys';
+import { useImage } from '../../Hooks/useImage';
 
 export default function EditProfile() {
   const { user, refetch } = useAuth(); 
   const axios = usePublicAxios();
   const navigate = useNavigate();
-  const [isSaving, setIsSaving] = useState(false);
-  const [form] = Form.useForm();
   
-  const oneuser = useQuerys({ users: "users" }) || [];
+  const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false); // ইমেজ আপলোড লোডিং স্টেট
+  const [form] = Form.useForm();
+  const [img,setImg]=useState('')
+  const oneuser = useQuerys({ users: "users" });
   const userData = oneuser[0] || {};
 
   // Role evaluations based on database or auth values
@@ -50,20 +53,11 @@ export default function EditProfile() {
     }
   }, [user, oneuser, form, userRole, userData]);
 
-  // Read local file or stream data to Base64 format string matrices
-  const getBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
-  // Intercept file picker selection to assign raw picture matrices directly to form
+  // Intercept file picker selection and upload directly to ImgBB
   const handleImageCapture = async (info) => {
     const file = info.file;
     
+    // Max 2MB Size Validation
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
       message.error('Profile image must be smaller than 2MB!');
@@ -71,12 +65,23 @@ export default function EditProfile() {
     }
 
     try {
-      const base64String = await getBase64(file);
-      form.setFieldsValue({ image: base64String });
-      message.success('Device image processed successfully.');
+      setIsUploading(true);
+      message.loading({ content: 'Uploading profile photo...', key: 'profileUpload' });
+     
+      // single image hosting trigger using custom hook/function
+      const hostedUrl = await useImage(file);
+    
+      if (hostedUrl) {
+    setImg(hostedUrl)
+        message.success({ content: 'Profile photo hosted successfully!', key: 'profileUpload', duration: 2 });
+      } else {
+        message.error({ content: 'Failed to host image.', key: 'profileUpload' });
+      }
     } catch (err) {
-      console.error("Local file conversion context error:", err);
-      message.error('Failed to interpret local file metadata selection.');
+      console.error("Hosting context error:", err);
+      message.error({ content: 'Image upload failed.', key: 'profileUpload' });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -86,11 +91,13 @@ export default function EditProfile() {
     // SAFETY FALLBACK: If values.image is missing, fallback cleanly to existing image string
     const submissionPayload = {
       ...values,
-      image: values.image || initialFormValues.image
+      image: img || initialFormValues.image
     };
 
+    console.log("Submitting Profile Data:", submissionPayload);
+
     try {
-      const response = await axios.put(`/users/update-profile/${initialFormValues.email}`, submissionPayload);
+      const response = await axios.put(`/users/update-profile/${initialFormValues?.email}`, submissionPayload);
       
       if (response.data.success || response.data) {
         message.success('Your profile changes have been saved successfully!');
@@ -134,15 +141,16 @@ export default function EditProfile() {
               <div className="relative group cursor-pointer shrink-0">
                 <Avatar 
                   size={90} 
-                  src={Form.useWatch('image', form) || initialFormValues.image} 
+                  src={Form.useWatch(userData?.image) || initialFormValues.image} 
                   icon={<UserOutlined />} 
-                  className="bg-blue-100 text-blue-600 border-2 border-white shadow-md"
+                  className={`bg-blue-100 text-blue-600 border-2 border-white shadow-md ${isUploading ? 'opacity-40' : ''}`}
                 />
                 <Upload
                   beforeUpload={() => false}
                   onChange={handleImageCapture}
                   showUploadList={false}
                   accept="image/*"
+                  disabled={isUploading}
                 >
                   <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     <CameraOutlined className="text-white text-lg" />
@@ -158,16 +166,17 @@ export default function EditProfile() {
                   onChange={handleImageCapture}
                   showUploadList={false}
                   accept="image/*"
+                  disabled={isUploading}
                 >
-                  <Button size="small" icon={<CameraOutlined />} className="rounded-lg text-xs font-medium">
-                    Take Photo or Browse Device
+                  <Button size="small" loading={isUploading} icon={<CameraOutlined />} className="rounded-lg text-xs font-medium">
+                    {isUploading ? 'Uploading...' : 'Take Photo or Browse Device'}
                   </Button>
                 </Upload>
 
                 <Form.Item name="image" noStyle>
                   <Input type="hidden" />
                 </Form.Item>
-                <p className="text-[11px] text-slate-400 m-0">Click the avatar area or browser triggers to snap a photograph using your active device camera or system storage folders.</p>
+                <p className="text-[11px] text-slate-400 m-0">Click the avatar area or browser triggers to snap a photograph using your active device camera or system storage folders. Max 2MB.</p>
               </div>
             </div>
 
@@ -241,6 +250,7 @@ export default function EditProfile() {
                 type="primary" 
                 htmlType="submit" 
                 loading={isSaving}
+                disabled={isUploading} // ইমেজ আপলোড চলাকালীন সাবমিট বন্ধ থাকবে
                 icon={<SaveOutlined />}
                 className="bg-[#365CCE] hover:bg-blue-700 h-10 px-6 rounded-lg font-bold text-xs tracking-wide shadow-sm"
               >

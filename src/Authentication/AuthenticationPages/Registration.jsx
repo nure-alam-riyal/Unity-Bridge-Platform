@@ -75,6 +75,7 @@ const Registration = () => {
       .catch((error) => {
         toast.dismiss(loadingToast);
         toast.error(error.message || "Authentication routing rejected.");
+         navigate('/'); 
       });
   };
 
