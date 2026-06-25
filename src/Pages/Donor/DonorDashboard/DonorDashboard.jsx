@@ -71,31 +71,60 @@ export default function DonorDashboard() {
   ];
 
   return (
-    <div className="p-6 md:p-10 bg-slate-50 min-h-screen space-y-6">
-      <div className="bg-white p-6 rounded-2xl border border-slate-100 flex justify-between items-center">
-        <div>
-          <Title level={3} className="m-0 font-black">Donor Terminal</Title>
-          <Text type="secondary">{user?.email}</Text>
-        </div>
-        <div className="flex items-center gap-3">
-          <Tag color="emerald" className="font-bold py-1 px-3"><SafetyCertificateOutlined /> Gateway Synced</Tag>
-          <Link to="/donor/mydonation">
-            <Button type="primary" icon={<FileTextOutlined />} className="bg-blue-600 hover:bg-blue-700">My Donations</Button>
-          </Link>
+    <div className="p-4 md:p-8 bg-slate-50/50 min-h-screen space-y-6 select-none">
+      
+      {/* HEADER SECTION */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-emerald-950 to-slate-900 text-white p-6 md:p-8 rounded-3xl shadow-xl border border-emerald-800/30">
+        <div className="absolute top-0 right-0 -mt-4 -mr-4 w-52 h-52 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 -mb-4 -ml-4 w-40 h-40 bg-teal-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        
+        <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">Donor Workspace</span>
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white mt-1">Donor Terminal</h1>
+            <p className="text-xs text-slate-300/80 mt-1.5 font-medium flex items-center gap-1.5 font-mono">
+              {user?.email}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 font-bold rounded-full tracking-wide text-[10px] uppercase">
+              Gateway Synced
+            </span>
+            <Link to="/donor/mydonation">
+              <Button type="primary" icon={<FileTextOutlined />} className="bg-blue-600 hover:bg-blue-700 border-none rounded-lg h-8 text-xs font-semibold">My Donations</Button>
+            </Link>
+          </div>
         </div>
       </div>
 
+      {/* STATISTIC CARD */}
       <Row gutter={16}>
         <Col span={24}>
-          <Card className="rounded-xl shadow-sm">
-            <Statistic title="Total Capital Contributed" value={totalAmount} suffix=" BDT" prefix={<DollarCircleOutlined className="text-emerald-500" />} />
-          </Card>
+          <div className="group relative overflow-hidden bg-white p-6 rounded-2xl border border-slate-100 shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-emerald-600"></div>
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Capital Contributed</p>
+                <h3 className="text-3xl font-black text-slate-800 mt-2">
+                  ৳{totalAmount.toLocaleString()} BDT
+                </h3>
+              </div>
+              <div className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
+                <DollarCircleOutlined className="text-2xl" />
+              </div>
+            </div>
+          </div>
         </Col>
       </Row>
 
-      <Card title={<div className="text-xs uppercase font-bold tracking-wider"><HistoryOutlined /> Safe Settlement Ledger</div>} className="rounded-xl shadow-sm">
-        <Table columns={columns} dataSource={history} loading={loading} pagination={{ pageSize: 5 }} />
-      </Card>
+      {/* TRANSACTION TABLE */}
+      <div className="bg-white border border-slate-100 rounded-2xl shadow-xs overflow-hidden">
+        <div className="p-6 border-b border-slate-100 flex items-center gap-2">
+          <HistoryOutlined className="text-slate-400" />
+          <h4 className="text-base font-extrabold text-slate-800 m-0">Safe Settlement Ledger</h4>
+        </div>
+        <Table columns={columns} dataSource={history} loading={loading} pagination={{ pageSize: 5 }} className="border-none" />
+      </div>
     </div>
   );
 }

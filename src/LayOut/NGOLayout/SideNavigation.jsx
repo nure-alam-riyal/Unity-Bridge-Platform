@@ -253,6 +253,7 @@ export default function SideNavigation() {
             <NavLink
               key={item.label}
               to={item.path}
+              end={item.path === '/ngo' || item.path === '/volunteer&donor' || item.path === '/donor' || item.path === '/admin'}
               className={({ isActive }) => `
                 w-full flex items-center gap-3.5 px-3 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all duration-200 text-left
                 ${isActive 

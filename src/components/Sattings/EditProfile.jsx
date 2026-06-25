@@ -121,22 +121,24 @@ export default function EditProfile() {
   };
 
   return (
-    <div className="p-4 md:p-8 bg-slate-50 min-h-screen">
+    <div className="p-4 md:p-8 bg-slate-50/50 min-h-screen">
       <div className="w-full max-w-3xl mx-auto space-y-6">
         
-        <div className="flex items-center gap-3">
+        {/* HEADER */}
+        <div className="flex items-center gap-4 bg-white p-6 rounded-2xl border border-slate-100 shadow-xs">
           <Button 
             icon={<ArrowLeftOutlined />} 
             onClick={() => navigate('/ngo/settings')}
-            className="border-slate-200 hover:border-slate-400 text-slate-600 rounded-lg"
+            className="border-slate-200 hover:border-slate-400 text-slate-600 rounded-xl h-10 w-10 flex items-center justify-center shrink-0"
           />
           <div>
-            <h2 className="text-xl font-bold text-slate-800">Edit Profile Workspace</h2>
-            <p className="text-xs text-slate-400">Modify your platform public variables and baseline values.</p>
+            <h2 className="text-xl font-extrabold text-slate-800 m-0">Edit Profile Workspace</h2>
+            <p className="text-xs text-slate-400 mt-1">Modify your platform public variables and baseline values.</p>
           </div>
         </div>
 
-        <Card className="shadow-sm border border-slate-100 rounded-xl bg-white p-2 md:p-4">
+        {/* FORM CONTAINER */}
+        <div className="bg-white border border-slate-100 rounded-3xl shadow-xs p-6 md:p-8">
           <Form
             form={form}
             layout="vertical"
@@ -145,13 +147,13 @@ export default function EditProfile() {
             requiredMark={false}
           >
             {/* AVATAR & CAMERA UPLOAD WORKFLOW */}
-            <div className="flex flex-col sm:flex-row items-center gap-6 p-5 mb-6 bg-slate-50/50 rounded-xl border border-slate-100">
+            <div className="flex flex-col sm:flex-row items-center gap-6 p-5 mb-6 bg-slate-50/50 rounded-2xl border border-slate-100">
               <div className="relative group cursor-pointer shrink-0">
                 <Avatar 
                   size={90} 
-                  src={Form.useWatch(userData?.image) || initialFormValues.image} 
+                  src={Form.useWatch('image', form) || initialFormValues.image} 
                   icon={<UserOutlined />} 
-                  className={`bg-blue-100 text-blue-600 border-2 border-white shadow-md ${isUploading ? 'opacity-40' : ''}`}
+                  className={`bg-indigo-100 text-indigo-600 border-2 border-white shadow-md transition-opacity duration-300 ${isUploading ? 'opacity-40' : ''}`}
                 />
                 <Upload
                   beforeUpload={() => false}
@@ -176,7 +178,7 @@ export default function EditProfile() {
                   accept="image/*"
                   disabled={isUploading}
                 >
-                  <Button size="small" loading={isUploading} icon={<CameraOutlined />} className="rounded-lg text-xs font-medium">
+                  <Button size="small" loading={isUploading} icon={<CameraOutlined />} className="rounded-lg text-xs font-semibold">
                     {isUploading ? 'Uploading...' : 'Take Photo or Browse Device'}
                   </Button>
                 </Upload>
@@ -190,34 +192,34 @@ export default function EditProfile() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
               <Form.Item 
-                label={<span className="font-semibold text-slate-700 text-xs"><UserOutlined className="mr-1" /> Profile Name</span>} 
+                label={<span className="font-bold text-slate-700 text-xs"><UserOutlined className="mr-1 text-slate-400" /> Profile Name</span>} 
                 name="userName"
                 rules={[{ required: true, message: 'Your user profile display name cannot be empty.' }]}
               >
-                <Input placeholder="John Doe" className="rounded-lg h-9 text-sm" />
+                <Input placeholder="John Doe" className="rounded-xl h-10 text-sm border-slate-200" />
               </Form.Item>
 
               <Form.Item 
-                label={<span className="font-semibold text-slate-400 text-xs"><MailOutlined className="mr-1" /> Account Email (Locked)</span>} 
+                label={<span className="font-bold text-slate-400 text-xs"><MailOutlined className="mr-1 text-slate-400" /> Account Email (Locked)</span>} 
                 name="email"
               >
-                <Input disabled className="rounded-lg h-9 bg-slate-100 text-slate-400 font-mono text-xs cursor-not-allowed" />
+                <Input disabled className="rounded-xl h-10 bg-slate-50 text-slate-400 font-mono text-xs border-slate-200 cursor-not-allowed" />
               </Form.Item>
 
               <Form.Item 
-                label={<span className="font-semibold text-slate-400 text-xs"><IdcardOutlined className="mr-1" /> Platform Privileges (Locked)</span>} 
+                label={<span className="font-bold text-slate-400 text-xs"><IdcardOutlined className="mr-1 text-slate-400" /> Platform Privileges (Locked)</span>} 
                 name="role"
               >
-                <Input disabled className="rounded-lg h-9 bg-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[11px] cursor-not-allowed" />
+                <Input disabled className="rounded-xl h-10 bg-slate-50 text-slate-400 font-bold uppercase tracking-wider text-[11px] border-slate-200 cursor-not-allowed" />
               </Form.Item>
 
               {/* RENDERED ONLY FOR VOLUNTEER&DONOR */}
               {isVolunteerAndDonor && (
                 <Form.Item 
-                  label={<span className="font-semibold text-slate-700 text-xs"><TrophyOutlined className="mr-1" /> Core Competency Skills</span>} 
+                  label={<span className="font-bold text-slate-700 text-xs"><TrophyOutlined className="mr-1 text-slate-400" /> Core Competency Skills</span>} 
                   name="skills"
                 >
-                  <Select mode="tags" placeholder="Type skills and hit Enter..." className="rounded-lg min-h-[36px]" tokenSeparators={[',']} />
+                  <Select mode="tags" placeholder="Type skills and hit Enter..." className="rounded-xl min-h-[40px] border-slate-200" tokenSeparators={[',']} />
                 </Form.Item>
               )}
             </div>
@@ -225,48 +227,48 @@ export default function EditProfile() {
             {/* RENDERED FOR ALL VOLUNTEERS */}
             {isVolunteer && (
               <Form.Item 
-                label={<span className="font-semibold text-slate-700 text-xs"><BookOutlined className="mr-1" /> Academic Education Qualification</span>} 
+                label={<span className="font-bold text-slate-700 text-xs"><BookOutlined className="mr-1 text-slate-400" /> Academic Education Qualification</span>} 
                 name="education"
                 rules={[{ required: true, message: 'Please write down your active level academic credentials.' }]}
                 className="mt-2"
               >
-                <Input placeholder="e.g., Bachelor of Science in Information Systems" className="rounded-lg h-9 text-sm" />
+                <Input placeholder="e.g., Bachelor of Science in Information Systems" className="rounded-xl h-10 text-sm border-slate-200" />
               </Form.Item>
             )}
 
             {/* RENDERED ONLY FOR NGO TO ENTER LICENSES */}
             {isNGO && (
               <Form.Item 
-                label={<span className="font-semibold text-slate-700 text-xs"><FileTextOutlined className="mr-1" /> Official NGO Operation License Number</span>} 
+                label={<span className="font-bold text-slate-700 text-xs"><FileTextOutlined className="mr-1 text-slate-400" /> Official NGO Operation License Number</span>} 
                 name="license"
                 rules={[{ required: true, message: 'NGO profiles require a valid registration license number entry.' }]}
                 className="mt-2"
               >
-                <Input placeholder="e.g., REG-2026-NGO-88432" className="rounded-lg h-9 text-sm" />
+                <Input placeholder="e.g., REG-2026-NGO-88432" className="rounded-xl h-10 text-sm border-slate-200" />
               </Form.Item>
             )}
 
-            <Form.Item label={<span className="font-semibold text-slate-700 text-xs">Biography Overview Scope</span>} name="bio" className="mt-2">
-              <Input.TextArea rows={4} placeholder="Tell us about yourself..." className="rounded-lg text-sm" />
+            <Form.Item label={<span className="font-bold text-slate-700 text-xs">Biography Overview Scope</span>} name="bio" className="mt-2">
+              <Input.TextArea rows={4} placeholder="Tell us about yourself..." className="rounded-xl text-sm border-slate-200" />
             </Form.Item>
 
-            <div className="mt-8 pt-4 border-t border-slate-100 flex justify-end gap-3">
-              <Button onClick={() => navigate('/ngo/settings')} className="rounded-lg h-10 font-medium text-xs text-slate-500">
+            <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end gap-3">
+              <Button onClick={() => navigate('/ngo/settings')} className="rounded-xl h-11 px-5 font-semibold text-xs text-slate-500 hover:text-slate-700">
                 Cancel
               </Button>
               <Button 
                 type="primary" 
                 htmlType="submit" 
                 loading={isSaving}
-                disabled={isUploading} // ইমেজ আপলোড চলাকালীন সাবমিট বন্ধ থাকবে
+                disabled={isUploading} 
                 icon={<SaveOutlined />}
-                className="bg-[#365CCE] hover:bg-blue-700 h-10 px-6 rounded-lg font-bold text-xs tracking-wide shadow-sm"
+                className="bg-indigo-600 hover:bg-indigo-700 h-11 px-6 rounded-xl font-bold text-xs tracking-wide shadow-sm border-none"
               >
                 Update Profile
               </Button>
             </div>
           </Form>
-        </Card>
+        </div>
 
       </div>
     </div>

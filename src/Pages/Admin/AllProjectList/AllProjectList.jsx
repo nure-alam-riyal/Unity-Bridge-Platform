@@ -128,59 +128,69 @@ const AllProjectList = () => {
   if (isError) return <div className="text-center my-10 text-red-500">Error fetching master project logs.</div>;
 
   return (
-    <div className="p-4 md:p-8 bg-slate-50 min-h-screen">
-      <div className="w-full max-w-6xl mx-auto bg-white shadow-sm rounded-xl border border-slate-100 overflow-hidden">
+    <div className="p-4 md:p-8 bg-slate-50/50 min-h-screen">
+      <div className="w-full max-w-6xl mx-auto bg-white shadow-xl rounded-3xl border border-slate-100 overflow-hidden">
         
-        <div className="p-5 border-b border-slate-100 bg-white space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        {/* HEADER SECTION */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 to-indigo-950 text-white p-6 md:p-8 border-b border-indigo-950">
+          <div className="absolute top-0 right-0 -mt-4 -mr-4 w-52 h-52 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 -mb-4 -ml-4 w-40 h-40 bg-slate-500/10 rounded-full blur-2xl pointer-events-none"></div>
+          
+          <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <h2 className="text-2xl font-bold text-slate-800">Project Catalog Manager</h2>
-              <p className="text-xs text-slate-500 mt-1">Review and verify all projects across the platform (Drafts excluded)</p>
+              <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Platform Administration</span>
+              <h2 className="text-2xl md:text-3xl font-black text-white mt-1">Project Catalog Manager</h2>
+              <p className="text-xs text-slate-300/80 mt-1.5 font-medium">Review and verify all projects across the platform (Drafts excluded)</p>
             </div>
-            <div className="text-xs bg-gradient-to-r from-blue-50 to-indigo-50 text-slate-700 px-4 py-2 rounded-lg font-semibold border border-blue-100 self-start sm:self-center">
-              Total Projects: <span className="text-lg font-bold text-blue-600">{filteredProjects.length}</span>
+            <div className="bg-white/10 backdrop-blur-md border border-white/15 px-5 py-3 rounded-2xl flex flex-col items-center shrink-0">
+              <span className="text-[10px] text-indigo-200 font-bold uppercase tracking-wider">Total Projects</span>
+              <span className="text-2xl font-black text-white">{filteredProjects.length}</span>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 items-stretch">
+        </div>
+
+        {/* SEARCH & ACTION CONTROL */}
+        <div className="p-6 bg-slate-50/50 border-b border-slate-100 flex flex-col sm:flex-row gap-4 items-stretch">
+          <div className="relative flex-1">
             <Input
               placeholder="Search by project title, NGO name, or email..."
-              prefix={<SearchOutlined className="text-slate-400" />}
+              prefix={<SearchOutlined className="text-slate-400 mr-1" />}
               value={searchText}
               onChange={(e) => {
                 setSearchText(e.target.value);
                 setCurrentPage(1);
               }}
-              className="flex-1 rounded-lg text-sm"
+              className="w-full rounded-xl h-11 text-sm border-slate-200 hover:border-indigo-400 focus:border-indigo-500 shadow-xs"
               allowClear
             />
-            <Button 
-              type="primary" 
-              icon={<FilePdfOutlined />}
-              onClick={handleDownloadPDF}
-              className="bg-red-600 hover:bg-red-700 border-none rounded-lg font-semibold"
-            >
-              Export PDF
-            </Button>
           </div>
+          <Button 
+            type="primary" 
+            icon={<FilePdfOutlined />}
+            onClick={handleDownloadPDF}
+            className="bg-rose-600 hover:bg-rose-700 border-none rounded-xl h-11 px-6 font-bold text-xs tracking-wider uppercase shrink-0"
+          >
+            Export Catalog PDF
+          </Button>
         </div>
 
-        
+        {/* TABLE SECTION */}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-100 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                <th className="p-4 w-[25%]">Project Title</th>
-                <th className="p-4 w-[30%]">Project Description</th>
-                <th className="p-4 w-[15%]">NGO Name</th>
-                <th className="p-4 w-[10%]">Status</th>
-                <th className="p-4 text-center w-[20%]">Actions</th>
+              <tr className="bg-slate-50/80 border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                <th className="p-5 w-[30%]">Project Context</th>
+                <th className="p-5 w-[30%]">Description Summary</th>
+                <th className="p-5 w-[20%]">NGO Governance</th>
+                <th className="p-5 w-[10%]">Verification Status</th>
+                <th className="p-5 text-center w-[10%]">Actions Control</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-sm text-slate-600">
+            <tbody className="divide-y divide-slate-100 text-xs text-slate-600">
               {currentProjects.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="p-8 text-center text-slate-400">
-                    No verified, rejected, or published project records found.
+                  <td colSpan="5" className="p-12 text-center text-slate-400 font-medium">
+                    No verified, rejected, or published project records matched your queries.
                   </td>
                 </tr>
               ) : (
@@ -190,40 +200,39 @@ const AllProjectList = () => {
                   return (
                     <tr key={project?._id} className="hover:bg-slate-50/40 transition-colors">
                       
-                      <td className="p-4 font-semibold text-slate-800">
+                      <td className="p-5">
                         <button 
-                          className="text-[#365CCE] hover:underline text-left font-semibold flex items-center gap-1"
+                          className="text-[#365CCE] hover:text-indigo-600 text-left font-bold text-sm flex items-center gap-1.5 transition-colors"
                           onClick={() => {
                             setActiveProject(project); 
                             setIsModalOpen(true);      
                           }}
                         >
-                          <EyeOutlined /> {project?.title}
+                          <EyeOutlined className="text-xs" /> {project?.title}
                         </button>
                       </td>
 
-                      <td className="p-4 max-w-xs truncate text-slate-500">
+                      <td className="p-5 max-w-xs truncate text-slate-500">
                         {project?.description}
                       </td>
 
-                      <td className="p-4">
-                        <div className="font-medium text-slate-700">{project?.ngoName || 'N/A'}</div>
-                        <div className="text-slate-400 text-xs">{project?.ngoEmail}</div>
+                      <td className="p-5">
+                        <div className="font-bold text-slate-700">{project?.ngoName || 'N/A'}</div>
+                        <div className="text-slate-400 font-mono mt-0.5">{project?.ngoEmail}</div>
                       </td>
 
-                      <td className="p-4">
+                      <td className="p-5">
                         {getStatusTag(currentStatus)}
                       </td>
 
-                      
-                      <td className="p-4 text-center">
+                      <td className="p-5 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <Button 
                             type="primary" 
                             size="small"
                             icon={<CheckCircleOutlined />}
                             disabled={currentStatus === 'verified' || isUpdating}
-                            className="bg-emerald-600 hover:bg-emerald-700 border-none rounded text-xs h-7 disabled:opacity-50"
+                            className="bg-emerald-600 hover:bg-emerald-700 border-none rounded-lg text-[10px] font-bold h-8 px-3.5 disabled:opacity-40 transition-all"
                             onClick={() => handleProjectStatus(project?._id, 'verified')}
                           >
                             Verify
@@ -234,7 +243,7 @@ const AllProjectList = () => {
                             size="small"
                             icon={<CloseCircleOutlined />}
                             disabled={currentStatus === 'rejected' || isUpdating}
-                            className="rounded text-xs h-7 disabled:opacity-50"
+                            className="rounded-lg text-[10px] font-bold h-8 px-3.5 disabled:opacity-40 transition-all"
                             onClick={() => {
                               setSelectedProject(project);
                               setIsRejectModalOpen(true);
@@ -253,9 +262,9 @@ const AllProjectList = () => {
           </table>
         </div>
 
-        
+        {/* PAGINATION */}
         {filteredProjects.length > 0 && (
-          <div className="p-4 bg-white border-t border-slate-100 flex items-center justify-center sm:justify-end">
+          <div className="p-5 bg-slate-50/50 border-t border-slate-100 flex items-center justify-center sm:justify-end">
             <Pagination
               current={currentPage}
               pageSize={pageSize}
@@ -263,7 +272,7 @@ const AllProjectList = () => {
               onChange={handlePageChange}
               showSizeChanger
               pageSizeOptions={['5', '10', '20', '50']}
-              className="text-xs sm:text-sm"
+              className="text-xs font-semibold"
             />
           </div>
         )}
