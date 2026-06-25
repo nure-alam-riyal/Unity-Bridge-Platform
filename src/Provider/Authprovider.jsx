@@ -1,4 +1,4 @@
-import React, { createContext,  useEffect, useState } from 'react'
+import React, { createContext, useEffect, useState } from 'react'
 import {
     createUserWithEmailAndPassword,
     GoogleAuthProvider,
@@ -10,10 +10,8 @@ import {
 } from 'firebase/auth';
 import { auth } from '../Authentication/Firebase/Firebase.jsx';
 import { useSelector } from 'react-redux';
-import toast from 'daisyui/components/toast/index.js';
-import usePublicAxios from '../Hooks/usePublicAxios.jsx'
-import { current } from '@reduxjs/toolkit';
-import { Users } from 'lucide-react';
+import toast from 'react-hot-toast';
+import usePublicAxios from '../Hooks/usePublicAxios.jsx';
 export const AuthContext = createContext('')
 // export const AuthContex = createContext('')
 const provider = new GoogleAuthProvider();
