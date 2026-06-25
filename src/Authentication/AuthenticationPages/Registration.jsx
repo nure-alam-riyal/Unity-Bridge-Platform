@@ -18,7 +18,7 @@ const Registration = () => {
   const { register, handleSubmit, watch } = useForm();
 
  
-  const selectedRole = watch("role", "volunteer&donar");
+  const selectedRole = watch("role", "volunteer&donor");
 
   const onSubmit = (data) => {
     SetError('');
@@ -138,7 +138,7 @@ const Registration = () => {
               <label className="label text-xs font-bold text-slate-500">Select Identity Path</label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
                 <label className={`flex items-center gap-2 p-2.5 rounded-xl cursor-pointer transition-all text-xs font-bold ${selectedRole === 'volunteer&donar' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500'}`}>
-                  <input type="radio" {...register("role")} value="volunteer&donar" className="radio radio-xs radio-success" defaultChecked />
+                  <input type="radio" {...register("role")} value="volunteer&donor" className="radio radio-xs radio-success" defaultChecked />
                   <span>Volunteer & Donor</span>
                 </label>
                 <label className={`flex items-center gap-2 p-2.5 rounded-xl cursor-pointer transition-all text-xs font-bold ${selectedRole === 'donar' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500'}`}>

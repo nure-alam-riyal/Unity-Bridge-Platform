@@ -19,8 +19,8 @@ const NavBar = () => {
         <li><NavLink to="/ngo">NGO</NavLink></li>
       )}
       
-      {role === 'volunteer&donar' && (
-        <li><NavLink to="/volunteer">Volunteer&Donor</NavLink></li>
+      {role === 'volunteer&donor' && (
+        <li><NavLink to="/volunteer&donor">Volunteer&Donor</NavLink></li>
       )}
       
       {role === 'admin' && (

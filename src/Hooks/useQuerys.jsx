@@ -24,7 +24,7 @@ console.log(users)
     const oneuser = data?.filter((u) =>{
       if(u?.email===user?.email)
         return {u}
-    else data
+    else ""
     } );
     console.log(oneuser,data)
     return oneuser

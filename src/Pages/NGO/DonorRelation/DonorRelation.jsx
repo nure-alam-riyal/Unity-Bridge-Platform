@@ -2,20 +2,26 @@ import React, { useEffect, useState } from 'react';
 import useQuerys from '../../../Hooks/useQuerys';
 import usePublicAxios from '../../../Hooks/usePublicAxios';
 import ProjectDetails from '../../Project/ProjectDetailPage/ProjectDetails';
-import { Button, message, Input, Select, Pagination } from 'antd';
+import { Button, message, Input, Select, Pagination, DatePicker } from 'antd';
 import {
   EyeOutlined,
   DollarOutlined,
   CloudUploadOutlined,
   TeamOutlined,
-  SearchOutlined
+  SearchOutlined,
+  FilePdfOutlined
 } from '@ant-design/icons';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import dayjs from 'dayjs';
 const DonorRelation = () => {
   const [recentProjects, setRecentProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeProject, setActiveProject] = useState(null);
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [searchText, setSearchText] = useState('');
   const oneuser = useQuerys({ users: "users" });
   const ngoEmail = oneuser?.[0]?.email;
   const axios = usePublicAxios();
@@ -36,6 +42,80 @@ const DonorRelation = () => {
         setLoading(false);
       });
   }, [ngoEmail, axios]);
+
+  // Filter projects by date range and search text
+  const filteredProjects = recentProjects.filter(project => {
+    // Date filter
+    if (dateRange[0] && dateRange[1]) {
+      const projectDate = new Date(project.date || project.createdAt);
+      const startDate = dateRange[0].toDate();
+      const endDate = dateRange[1].toDate();
+      endDate.setHours(23, 59, 59, 999);
+      if (projectDate < startDate || projectDate > endDate) {
+        return false;
+      }
+    }
+
+    // Search filter
+    if (searchText) {
+      return project.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+             project.key?.toLowerCase().includes(searchText.toLowerCase());
+    }
+
+    return true;
+  });
+
+  // PDF Download Handler
+  const handleDownloadPDF = () => {
+    if (filteredProjects.length === 0) {
+      message.warning('No projects to download');
+      return;
+    }
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Title
+    doc.setFontSize(16);
+    doc.text('Donor Relations Report', pageWidth / 2, 15, { align: 'center' });
+    
+    // Filter info
+    doc.setFontSize(10);
+    let filterText = `Total Projects: ${filteredProjects.length}`;
+    if (dateRange[0] && dateRange[1]) {
+      filterText += ` | Date Range: ${dateRange[0].format('MMM DD, YYYY')} - ${dateRange[1].format('MMM DD, YYYY')}`;
+    }
+    doc.text(filterText, 14, 25);
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 32);
+
+    // Table data
+    const tableData = filteredProjects.map(project => [
+      project.name || 'N/A',
+      project.key || 'N/A',
+      `৳${project.budget?.toLocaleString() || '0'}`,
+      project.status || 'N/A'
+    ]);
+
+    // Generate table
+    autoTable(doc, {
+      head: [['Project Name', 'Project ID', 'Budget', 'Status']],
+      body: tableData,
+      startY: 40,
+      margin: { top: 40, right: 14, bottom: 14, left: 14 },
+      theme: 'grid',
+      headStyles: {
+        fillColor: [54, 92, 206],
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: {
+        fillColor: [245, 245, 245]
+      }
+    });
+
+    doc.save(`donor-relations-${new Date().getTime()}.pdf`);
+    message.success('PDF downloaded successfully!');
+  };
 
   if (loading) {
     return (
@@ -66,6 +146,48 @@ const DonorRelation = () => {
         </div>
 
         <div className="bg-slate-800/50 border border-slate-700/60 rounded-2xl overflow-hidden backdrop-blur-md shadow-xl">
+          <div className="p-4 border-b border-slate-700 bg-slate-700/30 flex flex-col md:flex-row gap-4 items-end">
+            {/* Date Range Filter */}
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-slate-300 mb-2">Filter by Date Range</label>
+              <DatePicker.RangePicker
+                value={dateRange}
+                onChange={(dates) => setDateRange(dates || [null, null])}
+                style={{ width: '100%' }}
+                placeholder={['Start Date', 'End Date']}
+                className="rounded-lg"
+              />
+            </div>
+
+            {/* Search Input */}
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-slate-300 mb-2">Search by Name or ID</label>
+              <Input
+                placeholder="Search projects..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                prefix={<SearchOutlined className="text-slate-400" />}
+                className="rounded-lg bg-slate-800 border-slate-600 text-slate-50"
+              />
+            </div>
+
+            {/* Download PDF Button */}
+            <Button
+              type="primary"
+              icon={<FilePdfOutlined />}
+              onClick={handleDownloadPDF}
+              className="bg-red-600 hover:bg-red-700 border-none rounded"
+              disabled={filteredProjects.length === 0}
+            >
+              Download PDF
+            </Button>
+          </div>
+
+          {/* Results Counter */}
+          <div className="px-4 py-3 bg-slate-700/20 border-b border-slate-700 text-sm text-slate-300">
+            Showing <span className="font-semibold text-slate-50">{filteredProjects.length}</span> of <span className="font-semibold text-slate-50">{recentProjects.length}</span> projects
+          </div>
+
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -79,14 +201,14 @@ const DonorRelation = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700/40 text-slate-200">
-                {recentProjects.length === 0 ? (
+                {filteredProjects.length === 0 ? (
                   <tr>
                     <td colSpan="4" className="py-8 text-center text-slate-500 font-medium">
                       No project or donor transaction metrics found.
                     </td>
                   </tr>
                 ) : (
-                  recentProjects.map((project) => (
+                  filteredProjects.map((project) => (
                     <tr key={project.key} className="hover:bg-slate-700/20 transition-colors duration-150">
                       <td className="py-4 px-6 font-medium text-white max-w-xs truncate">
                         {project.name}

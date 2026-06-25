@@ -8,19 +8,20 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa6';
 import { motion } from 'framer-motion';
 
 const Login = () => {
+
   const location = useLocation();
   const [eye, setEye] = useState(true);
   const { signIn } = useAuth();
   const navigate = useNavigate();
-  const from = location.state?.from?.pathname || "/";
+  // const from = location.state?.from?.pathname || "/";
   const { register, handleSubmit } = useForm();
-
+const from = location?.state || '/'
   const onSubmit = (data) => {
     signIn(data?.email, data?.password)
       .then(() => {
         toast.success("Welcome back! Login success");
         // navigate(from, { replace: true });
-         navigate('/'); 
+        navigate(from)
       })
       .catch((error) => {
         toast.error(error.message);

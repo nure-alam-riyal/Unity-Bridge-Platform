@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Modal, Button, message, Descriptions } from 'antd';
-import { CheckOutlined, CloseOutlined, UserOutlined } from '@ant-design/icons';
+import { Modal, Button, message, Descriptions, Divider } from 'antd';
+import { CheckOutlined, CloseOutlined, UserOutlined, MailOutlined, CalendarOutlined, FileTextOutlined } from '@ant-design/icons';
 import usePublicAxios from '../../../Hooks/usePublicAxios';
 
 const ProjectApplication = ({ visible, onClose, project, refetch }) => {
@@ -179,24 +179,34 @@ const ProjectApplication = ({ visible, onClose, project, refetch }) => {
         {selectedApplicant && (
           <div className="mt-4">
             <Descriptions bordered column={1} size="small" className="bg-slate-50">
-              <Descriptions.Item label="Full Name">
+              <Descriptions.Item label={<span className="font-bold"><UserOutlined className="mr-2" />Full Name</span>}>
                 <strong className="text-slate-800">{selectedApplicant.name}</strong>
               </Descriptions.Item>
-              <Descriptions.Item label="Email Address">
-                {selectedApplicant.email}
+              <Descriptions.Item label={<span className="font-bold"><MailOutlined className="mr-2" />Email Address</span>}>
+                <a href={`mailto:${selectedApplicant.email}`} className="text-[#365CCE] hover:underline">
+                  {selectedApplicant.email}
+                </a>
               </Descriptions.Item>
-              <Descriptions.Item label="Application ID">
-                <code className="text-xs bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">
+              <Descriptions.Item label={<span className="font-bold"><FileTextOutlined className="mr-2" />Application ID</span>}>
+                <code className="text-xs bg-slate-100 px-2 py-1 rounded text-slate-600 font-mono">
                   {selectedApplicant.id ?? "N/A"}
                 </code>
               </Descriptions.Item>
-              <Descriptions.Item label="Applied At">
-                {selectedApplicant.appliedAt 
-                  ? new Date(selectedApplicant.appliedAt).toLocaleString() 
-                  : 'N/A'}
+              <Descriptions.Item label={<span className="font-bold"><CalendarOutlined className="mr-2" />Applied Date & Time</span>}>
+                <span className="text-slate-700 font-medium">
+                  {selectedApplicant.appliedAt 
+                    ? new Date(selectedApplicant.appliedAt).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })
+                    : 'N/A'}
+                </span>
               </Descriptions.Item>
-              <Descriptions.Item label="Current Status">
-                <span className={`inline-block border text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${getBadgeClass(selectedApplicant.status)}`}>
+              <Descriptions.Item label={<span className="font-bold">Current Application Status</span>}>
+                <span className={`inline-block border text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full ${getBadgeClass(selectedApplicant.status)}`}>
                   {selectedApplicant.status || 'applied'}
                 </span>
               </Descriptions.Item>

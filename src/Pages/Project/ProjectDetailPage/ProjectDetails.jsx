@@ -7,7 +7,8 @@ import {
   TeamOutlined,
   CheckCircleOutlined,
   GlobalOutlined,
-  PieChartOutlined
+  PieChartOutlined,
+  EnvironmentOutlined
 } from '@ant-design/icons';
 
 export default function ProjectDetails({ visible, onClose, projectData }) {
@@ -36,13 +37,15 @@ export default function ProjectDetails({ visible, onClose, projectData }) {
     { label: "Local Resource Training", percentage: 20, cost: totalBudget * 0.20, desc: "Skill development and baseline sustainability." }
   ];
 
-  // Placeholder imagery bank to cleanly serve structural layouts
-  const projectImages = [
-    "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=600&q=80",
-    "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=400&q=80",
-    "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&q=80",
-    "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=400&q=80"
-  ];
+  // Use real project images from projectData, or fallback to placeholder
+  const projectImages = projectData.projectImages && projectData.projectImages.length > 0
+    ? projectData.projectImages
+    : [
+        "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=600&q=80",
+        "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=400&q=80",
+        "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&q=80",
+        "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=400&q=80"
+      ];
 
   return (
     <Modal
@@ -67,6 +70,11 @@ export default function ProjectDetails({ visible, onClose, projectData }) {
             <Tag className="bg-slate-800 border-none text-slate-300 px-3 py-0.5 font-medium rounded-full text-xs">
               Timeline: {projectData.timeline || 'N/A'}
             </Tag>
+            {projectData.location && (
+              <Tag className="bg-slate-800 border-none text-slate-300 px-3 py-0.5 font-medium rounded-full text-xs flex items-center gap-1">
+                <EnvironmentOutlined /> {projectData.location}
+              </Tag>
+            )}
           </div>
           <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight text-white leading-tight">
             {projectData.title}

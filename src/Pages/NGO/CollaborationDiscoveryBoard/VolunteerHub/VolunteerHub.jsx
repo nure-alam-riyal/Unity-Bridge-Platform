@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Table, Button, Space, Modal, Input, message, Avatar, Tag } from 'antd';
-import { UserOutlined, EyeOutlined, CloseCircleOutlined, SolutionOutlined, CalendarOutlined } from '@ant-design/icons';
+import { Table, Button, Space, Modal, Input, message, Avatar, Tag, Select } from 'antd';
+import { UserOutlined, EyeOutlined, CloseCircleOutlined, SolutionOutlined, CalendarOutlined, FilePdfOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import usePublicAxios from '../../../../Hooks/usePublicAxios';
 import useAuth from '../../../../Hooks/useAuth'; // <-- Import your authentication hook here
 import Loading from '../../../../components/Loading';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export default function VolunteerHub() {
   const axios = usePublicAxios();
@@ -16,6 +18,8 @@ export default function VolunteerHub() {
   const [selectedRecord, setSelectedRecord] = useState(null); 
   const [rejectReason, setRejectReason] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
+  const [statusFilter, setStatusFilter] = useState(''); // Filter by volunteer status
+  const [searchText, setSearchText] = useState(''); // Add search state
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -70,6 +74,68 @@ export default function VolunteerHub() {
     }
     return accumulator;
   }, []);
+
+  // Filter by status
+  const filteredVolunteersList = statusFilter 
+    ? flatVolunteersList.filter(volunteer => volunteer.associatedProjectTitle) // Placeholder - volunteers don't have explicit status in your data structure
+    : flatVolunteersList;
+
+  // Filter by search text (name or email)
+  const searchFilteredVolunteersList = searchText.trim()
+    ? filteredVolunteersList.filter(volunteer =>
+        volunteer.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+        volunteer.email?.toLowerCase().includes(searchText.toLowerCase())
+      )
+    : filteredVolunteersList;
+
+  // PDF Download Handler
+  const handleDownloadPDF = () => {
+    if (searchFilteredVolunteersList.length === 0) {
+      message.warning('No volunteers to download');
+      return;
+    }
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Title
+    doc.setFontSize(16);
+    doc.text('Your NGO Volunteers List', pageWidth / 2, 15, { align: 'center' });
+    
+    // Filter info
+    doc.setFontSize(10);
+    doc.text(`Total Volunteers: ${searchFilteredVolunteersList.length}`, 14, 25);
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 32);
+
+    // Table data
+    const tableData = searchFilteredVolunteersList.map(volunteer => [
+      volunteer.name || 'N/A',
+      volunteer.email || 'N/A',
+      volunteer.associatedProjectTitle || 'N/A',
+      volunteer.experience || 'N/A',
+      volunteer.appliedAt ? new Date(volunteer.appliedAt).toLocaleDateString() : 'N/A'
+    ]);
+
+    // Generate table
+    autoTable(doc, {
+      head: [['Name', 'Email', 'Project', 'Experience', 'Applied Date']],
+      body: tableData,
+      startY: 40,
+      margin: { top: 40, right: 14, bottom: 14, left: 14 },
+      theme: 'grid',
+      headStyles: {
+        fillColor: [54, 92, 206],
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: {
+        fillColor: [245, 245, 245]
+      }
+    });
+
+    doc.save(`volunteers-list-${new Date().getTime()}.pdf`);
+    message.success('PDF downloaded successfully!');
+  };
 
   // 3. Handle rejecting/removing a volunteer
   const handleRejectVolunteer = async () => {
@@ -192,20 +258,46 @@ export default function VolunteerHub() {
       <div className="w-full max-w-6xl mx-auto bg-white shadow-sm rounded-xl border border-slate-100 overflow-hidden">
         
         {/* Component Header Metadata Card */}
-        <div className="p-5 border-b border-slate-100 bg-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-bold text-slate-800">Your NGO's Volunteers</h2>
-            <p className="text-xs text-slate-400">Manage active volunteer applications across your hosted projects only.</p>
+        <div className="p-5 border-b border-slate-100 bg-white">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <div>
+              <h2 className="text-xl font-bold text-slate-800">Your NGO's Volunteers</h2>
+              <p className="text-xs text-slate-400">Manage active volunteer applications across your hosted projects only.</p>
+            </div>
+            <div className="text-xs bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg font-medium self-start sm:self-center">
+              Your Active Volunteers: <span className="font-bold text-slate-900">{searchFilteredVolunteersList.length}</span>
+            </div>
           </div>
-          <div className="text-xs bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg font-medium self-start sm:self-center">
-            Your Active Volunteers: <span className="font-bold text-slate-900">{flatVolunteersList.length}</span>
+
+          {/* Filter Controls */}
+          <div className="flex flex-col md:flex-row gap-3 items-end">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-slate-700 mb-2">Search by Name or Email</label>
+              <Input
+                placeholder="Search volunteers..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="rounded-lg"
+              />
+            </div>
+
+            {/* Download PDF Button */}
+            <Button
+              type="primary"
+              icon={<FilePdfOutlined />}
+              onClick={handleDownloadPDF}
+              className="bg-red-600 hover:bg-red-700 border-none rounded"
+              disabled={searchFilteredVolunteersList.length === 0}
+            >
+              Download PDF
+            </Button>
           </div>
         </div>
 
         {/* Ant Design Table */}
         <Table
           columns={columns}
-          dataSource={flatVolunteersList}
+          dataSource={searchFilteredVolunteersList}
           className="p-2"
           pagination={{
             current: currentPage,

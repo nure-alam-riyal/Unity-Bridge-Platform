@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Input, InputNumber, Button, Upload, Tag, message } from 'antd';
-import { CalendarOutlined, DollarOutlined, UploadOutlined, TeamOutlined } from '@ant-design/icons';
+import { CalendarOutlined, DollarOutlined, UploadOutlined, TeamOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import useAuth from '../../../Hooks/useAuth';
 import usePublicAxios from '../../../Hooks/usePublicAxios';
 import { useImage } from '../../../Hooks/useImage'; 
@@ -57,15 +57,15 @@ export default function LaunchProject() {
      
       
       });
-      console.log(uploadPromises)
-        uploadedImageUrls = await uploadPromises;
+      
+        uploadedImageUrls = await Promise.all(uploadPromises);
         
         message.success({ content: 'All images uploaded successfully!', key: 'uploading', duration: 2 });
       }
 
       // Destructure media out so we don't send the raw AntD file object to the backend
       const { media, ...restValues } = values;
-
+console.log(uploadedImageUrls)
       const finalPayload = {
         ...restValues,
         projectImages: uploadedImageUrls.length > 0 ? uploadedImageUrls : '', // URLs Array
@@ -78,7 +78,7 @@ export default function LaunchProject() {
 
       console.log(`Submitting (${submitType.toUpperCase()}):`, finalPayload);
 
-      // const res = await axiosPublic.post('projects', finalPayload);
+      const res = await axiosPublic.post('projects', finalPayload);
 
       if (res.data.insertedId) {
         if (submitType === 'draft') {
@@ -194,6 +194,18 @@ export default function LaunchProject() {
                 />
               </Form.Item>
             </div>
+
+            <Form.Item
+              label={<span className="font-semibold text-slate-700 text-sm">Project Location</span>}
+              name="location"
+              rules={[{ required: true, message: 'Please specify the project location' }]}
+            >
+              <Input 
+                prefix={<EnvironmentOutlined className="text-slate-400 mr-1" />}
+                placeholder="e.g., Dhaka, Bangladesh" 
+                className="h-11 bg-[#F7FAF8] border-[#E2E8E4] rounded-lg hover:border-[#2A7F62] focus:border-[#2A7F62]"
+              />
+            </Form.Item>
           </div>
 
           {/* SECTION 3: Project Media (Multiple Upload & 2MB Limit) */}

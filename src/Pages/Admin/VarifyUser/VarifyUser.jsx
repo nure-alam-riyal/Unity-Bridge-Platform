@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { Modal, Button, message, Descriptions, Tag } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined, WarningOutlined, EyeOutlined } from '@ant-design/icons';
+import { Modal, Button, message, Descriptions, Tag, Select, Input } from 'antd';
+import { CheckCircleOutlined, CloseCircleOutlined, WarningOutlined, EyeOutlined, FilePdfOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import usePublicAxios from '../../../Hooks/usePublicAxios';
 import Loading from '../../../components/Loading';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const VerifyUser = () => {
   const axios = usePublicAxios();
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [roleFilter, setRoleFilter] = useState('');
+  const [searchText, setSearchText] = useState('');
 
   // 1. Fetch all users from your backend database
   const { data: users = [], isLoading, isError, refetch } = useQuery({
@@ -17,7 +21,68 @@ const VerifyUser = () => {
     queryFn: () => axios.get('users').then(res => res.data)
   });
 
-  // 2. Handle updating verification status via direct async call
+  // 1.5 Filter users by role and search text
+  const filteredUsers = users.filter(user => {
+    const matchesRole = roleFilter === '' || user?.role === roleFilter;
+    const matchesSearch = user?.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+                         user?.email?.toLowerCase().includes(searchText.toLowerCase());
+    return matchesRole && matchesSearch;
+  });
+
+  // 2. PDF Download Handler
+  const handleDownloadPDF = () => {
+    if (filteredUsers.length === 0) {
+      message.warning('No users to download');
+      return;
+    }
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Title
+    doc.setFontSize(16);
+    doc.text('User Verification List', pageWidth / 2, 15, { align: 'center' });
+    
+    // Filter info
+    doc.setFontSize(10);
+    const roleText = roleFilter ? `Role: ${roleFilter} | ` : '';
+    doc.text(`${roleText}Total Users: ${filteredUsers.length}`, 14, 25);
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 32);
+
+    // Table data
+    const tableData = filteredUsers.map(user => [
+      user?.name || 'N/A',
+      user?.email || 'N/A',
+      user?.role || 'N/A',
+      user?.status || 'pending'
+    ]);
+
+    // Generate table
+    autoTable(doc, {
+      head: [['User Name', 'Email', 'Role', 'Status']],
+      body: tableData,
+      startY: 40,
+      margin: { top: 40, right: 14, bottom: 14, left: 14 },
+      theme: 'grid',
+      headStyles: {
+        fillColor: [54, 92, 206],
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: {
+        fillColor: [245, 245, 245]
+      },
+      columnStyles: {
+        0: { cellWidth: 50 },
+        1: { cellWidth: 60 },
+        2: { cellWidth: 30 },
+        3: { cellWidth: 30 }
+      }
+    });
+
+    doc.save(`user-verification-list-${new Date().getTime()}.pdf`);
+    message.success('PDF downloaded successfully!');
+  };
   const handleVerification = async (userId, newStatus) => {
     setIsUpdating(true);
     try {
@@ -64,6 +129,57 @@ const VerifyUser = () => {
           <p className="text-xs text-slate-400">Review user identity documents and handle verification statuses.</p>
         </div>
 
+        {/* Filter and Search Controls */}
+        <div className="p-5 border-b border-slate-100 bg-white space-y-4">
+          <div className="flex flex-col md:flex-row gap-4 items-end">
+            {/* Role Filter */}
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-slate-700 mb-2">Filter by Role</label>
+              <Select
+                value={roleFilter}
+                onChange={setRoleFilter}
+                placeholder="All Roles"
+                allowClear
+                className="w-full"
+                options={[
+                  { label: 'All Roles', value: '' },
+                  { label: 'Admin', value: 'admin' },
+                  { label: 'NGO', value: 'NGO' },
+                  { label: 'Donor', value: 'Donor' },
+                  { label: 'Volunteer', value: 'Volunteer' }
+                ]}
+              />
+            </div>
+
+            {/* Search Input */}
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-slate-700 mb-2">Search</label>
+              <Input
+                placeholder="Search by name or email..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="rounded-lg"
+              />
+            </div>
+
+            {/* Download PDF Button */}
+            <Button
+              type="primary"
+              icon={<FilePdfOutlined />}
+              onClick={handleDownloadPDF}
+              className="bg-red-600 hover:bg-red-700 border-none rounded"
+              disabled={filteredUsers.length === 0}
+            >
+              Download PDF
+            </Button>
+          </div>
+
+          {/* Results Count */}
+          <div className="text-sm text-slate-600">
+            Showing <span className="font-semibold">{filteredUsers.length}</span> of <span className="font-semibold">{users.length}</span> users
+          </div>
+        </div>
+
         {/* Dynamic HTML Table Loop */}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -77,12 +193,12 @@ const VerifyUser = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-sm text-slate-600">
-              {users.length === 0 ? (
+              {filteredUsers.length === 0 ? (
                 <tr>
                   <td colSpan="5" className="p-8 text-center text-slate-400">No users found in system registry.</td>
                 </tr>
               ) : (
-                users.map((userItem) => {
+                filteredUsers.map((userItem) => {
                   const currentStatus = userItem?.status || 'pending';
 
                   return (

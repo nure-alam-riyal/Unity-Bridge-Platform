@@ -59,15 +59,14 @@ export default function SideNavigation() {
             <NavLink
               key={item.label}
               to={item.path}
-              className={({ isActive }) => 
-                `w-full flex items-center gap-3.5 px-3 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all duration-200 text-left
+              className={({ isActive }) => `
+                w-full flex items-center gap-3.5 px-3 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all duration-200 text-left
                 ${isActive 
-                  ? 'bg-[#EDF4F0] text-[#0D623B]' 
+                  ? 'bg-[#EDF4F0] text-[#0D623B] shadow-sm' 
                   : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                }`
-              }
+                }
+              `}
             >
-              {/* Context-aware dynamic coloring for the React Icon component */}
               {({ isActive }) => (
                 <>
                   <span className={isActive ? 'text-[#0D623B]' : 'text-slate-400'}>
@@ -100,13 +99,13 @@ export default function SideNavigation() {
           <NavLink
             key={item.label}
             to={item.path}
-            className={({ isActive }) => 
-              `w-full flex items-center gap-3.5 px-3 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all duration-200 text-left
+            className={({ isActive }) => `
+              w-full flex items-center gap-3.5 px-3 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all duration-200 text-left
               ${isActive 
-                ? 'bg-[#EDF4F0] text-[#0D623B]' 
+                ? 'bg-[#EDF4F0] text-[#0D623B] shadow-sm' 
                 : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`
-            }
+              }
+            `}
           >
             {({ isActive }) => (
               <>
