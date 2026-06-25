@@ -100,79 +100,111 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="p-4 md:p-8 bg-slate-50 min-h-screen space-y-6 select-none">
+    <div className="p-4 md:p-8 bg-slate-50/50 min-h-screen space-y-6 select-none">
       
       {/* GLOBAL SYSTEM CONTROL HEADER */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-200/60 pb-5">
-        <div>
-          <h1 className="text-2xl font-black text-slate-800 tracking-tight m-0">System Root Dashboard</h1>
-          <p className="text-xs text-slate-400 mt-1">Global platform health analytics, collections parameters, and data logs routing frameworks.</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {counters.pendingVerifications > 0 && (
-            <Tag color="error" className="px-3 py-1 font-extrabold rounded-lg text-xs animate-pulse">
-              {counters.pendingVerifications} VERIFICATIONS PENDING
-            </Tag>
-          )}
-          <Tag color="slate" className="bg-slate-900 border-none text-white px-3 py-1 font-bold rounded-lg text-xs">
-            ROOT SUPERUSER ACCESS
-          </Tag>
+      <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 to-slate-800 text-white p-6 md:p-8 rounded-3xl shadow-xl border border-slate-700/50">
+        <div className="absolute top-0 right-0 -mt-4 -mr-4 w-52 h-52 bg-slate-700/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 -mb-4 -ml-4 w-40 h-40 bg-slate-600/10 rounded-full blur-2xl pointer-events-none"></div>
+        
+        <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-widest text-indigo-400">System Root Console</span>
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white mt-1">System Root Dashboard</h1>
+            <p className="text-xs text-slate-400 mt-1.5">Global platform health analytics, collections parameters, and data logs routing frameworks.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            {counters.pendingVerifications > 0 && (
+              <span className="bg-red-500/20 text-red-300 border border-red-500/30 px-3 py-1 font-bold rounded-full tracking-wide text-[10px] uppercase animate-pulse">
+                {counters.pendingVerifications} VERIFICATIONS PENDING
+              </span>
+            )}
+            <span className="bg-slate-800 text-slate-300 border border-slate-700 px-3 py-1 font-bold rounded-full tracking-wide text-[10px] uppercase">
+              ROOT SUPERUSER ACCESS
+            </span>
+          </div>
         </div>
       </div>
 
-      
+      {/* STAT CARDS */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-sm border-none rounded-xl bg-white">
-            <Statistic
-              title={<span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Funds Collected</span>}
-              value={counters.totalDonationsAmount}
-              precision={2}
-              valueStyle={{ color: '#0D623B', fontWeight: 900, fontSize: '24px' }}
-              prefix={<DollarCircleOutlined className="mr-1 text-emerald-600" />}
-            />
-          </Card>
+          <div className="group relative overflow-hidden bg-white p-5 rounded-2xl border border-slate-100 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+            <div className="absolute top-0 left-0 w-1 h-full bg-emerald-600"></div>
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Funds Collected</p>
+                <h3 className="text-2xl font-black text-slate-800 mt-2">
+                  ৳{counters.totalDonationsAmount.toLocaleString()}
+                </h3>
+              </div>
+              <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
+                <DollarCircleOutlined className="text-xl" />
+              </div>
+            </div>
+          </div>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-sm border-none rounded-xl bg-white">
-            <Statistic
-              title={<span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total System Members</span>}
-              value={counters.totalUsers}
-              valueStyle={{ color: '#1E293B', fontWeight: 900, fontSize: '24px' }}
-              prefix={<TeamOutlined className="mr-1 text-blue-500" />}
-            />
-          </Card>
+          <div className="group relative overflow-hidden bg-white p-5 rounded-2xl border border-slate-100 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+            <div className="absolute top-0 left-0 w-1 h-full bg-blue-600"></div>
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Total System Members</p>
+                <h3 className="text-2xl font-black text-slate-800 mt-2">
+                  {counters.totalUsers}
+                </h3>
+              </div>
+              <div className="p-3 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                <TeamOutlined className="text-xl" />
+              </div>
+            </div>
+          </div>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-sm border-none rounded-xl bg-white">
-            <Statistic
-              title={<span className="text-xs font-bold uppercase tracking-wider text-slate-400">Registered NGOs</span>}
-              value={counters.ngoCount}
-              valueStyle={{ color: '#6B21A8', fontWeight: 900, fontSize: '24px' }}
-              prefix={<SafetyCertificateOutlined className="mr-1 text-purple-500" />}
-            />
-          </Card>
+          <div className="group relative overflow-hidden bg-white p-5 rounded-2xl border border-slate-100 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+            <div className="absolute top-0 left-0 w-1 h-full bg-purple-600"></div>
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Registered NGOs</p>
+                <h3 className="text-2xl font-black text-slate-800 mt-2">
+                  {counters.ngoCount}
+                </h3>
+              </div>
+              <div className="p-3 bg-purple-50 text-purple-600 rounded-xl group-hover:bg-purple-600 group-hover:text-white transition-all duration-300">
+                <SafetyCertificateOutlined className="text-xl" />
+              </div>
+            </div>
+          </div>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <Card className="shadow-sm border-none rounded-xl bg-white">
-            <Statistic
-              title={<span className="text-xs font-bold uppercase tracking-wider text-slate-400">Active Project Shells</span>}
-              value={counters.activeProjects}
-              valueStyle={{ color: '#312E81', fontWeight: 900, fontSize: '24px' }}
-              prefix={<ProjectOutlined className="mr-1 text-indigo-500" />}
-            />
-          </Card>
+          <div className="group relative overflow-hidden bg-white p-5 rounded-2xl border border-slate-100 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+            <div className="absolute top-0 left-0 w-1 h-full bg-indigo-600"></div>
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Active Project Shells</p>
+                <h3 className="text-2xl font-black text-slate-800 mt-2">
+                  {counters.activeProjects}
+                </h3>
+              </div>
+              <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+                <ProjectOutlined className="text-xl" />
+              </div>
+            </div>
+          </div>
         </Col>
       </Row>
 
-     
+      {/* TREND CHARTS */}
       <Row gutter={[20, 20]}>
-       
         <Col xs={24} lg={14}>
-          <Card title={<span className="text-sm font-extrabold text-slate-700">Platform Cross-Collection Funding Growth</span>} className="shadow-sm border-none rounded-xl bg-white">
+          <div className="bg-white border border-slate-100 rounded-2xl shadow-xs p-6">
+            <div className="mb-4">
+              <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Collections Analytics</span>
+              <h4 className="text-base font-extrabold text-slate-800 m-0">Platform Cross-Collection Funding Growth</h4>
+            </div>
             <div className="w-full h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={operationalTrends} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -185,37 +217,43 @@ export default function AdminDashboard() {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
                   <XAxis dataKey="month" tickLine={false} style={{ fontSize: '11px', fill: '#94A3B8' }} />
                   <YAxis tickLine={false} style={{ fontSize: '11px', fill: '#94A3B8' }} />
-                  <Tooltip contentStyle={{ borderRadius: '8px', border: 'none' }} />
-                  <Area type="monotone" dataKey="donations" name="Donations Flow ($)" stroke="#0D623B" strokeWidth={2.5} fillOpacity={1} fill="url(#adminDonations)" />
+                  <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }} />
+                  <Area type="monotone" dataKey="donations" name="Donations Flow (৳)" stroke="#0D623B" strokeWidth={2.5} fillOpacity={1} fill="url(#adminDonations)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-          </Card>
+          </div>
         </Col>
 
-        {/* User Acquisition Bar Analytics */}
         <Col xs={24} lg={10}>
-          <Card title={<span className="text-sm font-extrabold text-slate-700">User Growth Registrations</span>} className="shadow-sm border-none rounded-xl bg-white">
+          <div className="bg-white border border-slate-100 rounded-2xl shadow-xs p-6">
+            <div className="mb-4">
+              <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">User Acquisition</span>
+              <h4 className="text-base font-extrabold text-slate-800 m-0">User Growth Registrations</h4>
+            </div>
             <div className="w-full h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={operationalTrends} margin={{ top: 10, right: 5, left: -25, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
                   <XAxis dataKey="month" tickLine={false} style={{ fontSize: '11px', fill: '#94A3B8' }} />
                   <YAxis tickLine={false} style={{ fontSize: '11px', fill: '#94A3B8' }} />
-                  <Tooltip contentStyle={{ borderRadius: '8px', border: 'none' }} />
-                  <Bar dataKey="registrations" name="New Registries" fill="#4F46E5" radius={[4, 4, 0, 0]} />
+                  <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }} />
+                  <Bar dataKey="registrations" name="New Registries" fill="#4F46E5" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </Card>
+          </div>
         </Col>
       </Row>
 
       {/* ROLE DISTRIBUTION SPLITS & LOG TABLES */}
       <Row gutter={[20, 20]}>
-        {/* User Accounts Overview Segment */}
         <Col xs={24} lg={16}>
-          <Card title={<span className="text-sm font-extrabold text-slate-700">Recent Accounts Pipeline Auditing</span>} className="shadow-sm border-none rounded-xl bg-white overflow-hidden h-full">
+          <div className="bg-white border border-slate-100 rounded-2xl shadow-xs overflow-hidden h-full">
+            <div className="p-6 border-b border-slate-100">
+              <h4 className="text-base font-extrabold text-slate-800 m-0">Recent Accounts Pipeline Auditing</h4>
+              <p className="text-xs text-slate-400 mt-1">Review accounts awaiting database activation or profile checks.</p>
+            </div>
             {recentUsers.length > 0 ? (
               <Table 
                 columns={userColumns} 
@@ -227,43 +265,49 @@ export default function AdminDashboard() {
             ) : (
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No newly created document registries." />
             )}
-          </Card>
+          </div>
         </Col>
 
-        {/* User Base Segmentation distribution parameters */}
         <Col xs={24} lg={8}>
-          <Card title={<span className="text-sm font-extrabold text-slate-700">Platform Persona Metrics</span>} className="shadow-sm border-none rounded-xl bg-white h-full">
-            <div className="space-y-4 py-2">
-              <div>
-                <div className="flex justify-between text-xs font-bold text-slate-500 mb-1">
-                  <span>VOLUNTEER & DONORS</span>
-                  <span className="font-mono">{(counters.volunteerDonorCount / counters.totalUsers * 100).toFixed(0)}%</span>
-                </div>
-                <Progress percent={(counters.volunteerDonorCount / counters.totalUsers * 100)} showInfo={false} strokeColor="#3b82f6" trailColor="#f1f5f9" />
+          <div className="bg-white border border-slate-100 rounded-2xl shadow-xs p-6 h-full flex flex-col justify-between">
+            <div>
+              <div className="mb-4">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Demographics</span>
+                <h4 className="text-base font-extrabold text-slate-800 m-0">Platform Persona Metrics</h4>
               </div>
-
-              <div>
-                <div className="flex justify-between text-xs font-bold text-slate-500 mb-1">
-                  <span>NGO CORPORATE WORKSPACES</span>
-                  <span className="font-mono">{(counters.ngoCount / counters.totalUsers * 100).toFixed(0)}%</span>
-                </div>
-                <Progress percent={(counters.ngoCount / counters.totalUsers * 100)} showInfo={false} strokeColor="#a855f7" trailColor="#f1f5f9" />
-              </div>
-
-              <div className="pt-2 border-t border-slate-100">
-                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100/80 flex justify-between items-center">
-                  <div className="space-y-0.5">
-                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Live System Integrity</div>
-                    <div className="text-xs font-bold text-slate-700">All Nodes Functional</div>
+              
+              <div className="space-y-4 mt-6">
+                <div>
+                  <div className="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                    <span>VOLUNTEER & DONORS</span>
+                    <span className="font-mono">{(counters.volunteerDonorCount / counters.totalUsers * 100).toFixed(0)}%</span>
                   </div>
-                  <span className="flex h-2 w-2 relative">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
+                  <Progress percent={(counters.volunteerDonorCount / counters.totalUsers * 100)} showInfo={false} strokeColor="#3b82f6" trailColor="#f1f5f9" />
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                    <span>NGO CORPORATE WORKSPACES</span>
+                    <span className="font-mono">{(counters.ngoCount / counters.totalUsers * 100).toFixed(0)}%</span>
+                  </div>
+                  <Progress percent={(counters.ngoCount / counters.totalUsers * 100)} showInfo={false} strokeColor="#a855f7" trailColor="#f1f5f9" />
                 </div>
               </div>
             </div>
-          </Card>
+
+            <div className="pt-4 border-t border-slate-100 mt-6">
+              <div className="bg-emerald-50 p-3.5 rounded-xl border border-emerald-100/50 flex justify-between items-center">
+                <div className="space-y-0.5">
+                  <div className="text-[9px] text-emerald-600 font-bold uppercase tracking-wider">Live System Integrity</div>
+                  <div className="text-xs font-black text-emerald-800">All Nodes Functional</div>
+                </div>
+                <span className="flex h-2.5 w-2.5 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+              </div>
+            </div>
+          </div>
         </Col>
       </Row>
 
