@@ -21,8 +21,8 @@ const provider = new GoogleAuthProvider();
 
 
 export default function AuthProvider({ children }) {
-    const [query,setQuery]=useState('')
-    const userdata=useSelector(state=>state.user)
+    const [query, setQuery] = useState('')
+    const userdata = useSelector(state => state.user)
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState(null);
     const axiosPublic = usePublicAxios();
@@ -36,72 +36,72 @@ export default function AuthProvider({ children }) {
         return signInWithEmailAndPassword(auth, email, pass)
 
     }
-   
+
     const createUser = (email, pass) => {
         setLoading(true)
-       
-        
+
+
         return createUserWithEmailAndPassword(auth, email, pass)
 
     }
 
-   const Updateprofile= async(name,photo)=>{
-    setLoading(false)
-      return  updateProfile(auth.currentUser,{
-        displayName:name,
-        
- })
-}
-   
-     const LogOut = () => {
+    const Updateprofile = async (name, photo) => {
+        setLoading(false)
+        return updateProfile(auth.currentUser, {
+            displayName: name,
+
+        })
+    }
+
+    const LogOut = () => {
         setLoading(true)
         return signOut(auth)
     }
-    
-   
-    
 
-    
+
+
+
+
     useEffect(() => {
         const unSubscribe = onAuthStateChanged(auth, (Currentuser => {
-            
+
             // console.log(Currentuser)
             setLoading(false)
- 
+
             if (Currentuser) {
                 const userInfo = {
                     email: Currentuser?.email,
                     userName: Currentuser?.displayName || userdata?.userName || "Unknown",
                     image: Currentuser?.photoURL,
-                    role:userdata?.role ||'volunteer&donor',
-                    NIDorBRITH:userdata?.NIDorBRITH,
-                    LicenseNumber:userdata?.LicenseNumber
+                    role: userdata?.role || 'volunteer&donor',
+                    NIDorBRITH: userdata?.NIDorBRITH,
+                    LicenseNumber: userdata?.LicenseNumber
 
                 }
-                 console.log(userInfo)
-                if(userInfo?.email&&userInfo?.userName&&userInfo?.role){
-                  setUser(userInfo)
-                  axiosPublic.post('users',userInfo).then(res=>{
-                    if(res.data.insertedId){
-                               toast.success("user login")
-                               
-                    }
-                   })
-                //  axiosPublic.post('/jwt',{ email:CurretUser?.email})
-                //  .then(res=>{
-                //     if(res.data.token){
-                //         localStorage.setItem('token',res.data.token)
-                //     }
-                //  })
+                console.log(userInfo)
+                if (userInfo?.email && userInfo?.userName && userInfo?.role) {
+                    setUser(userInfo)
+                    axiosPublic.post('users', userInfo).then(res => {
+                        if (res.data.insertedId) {
+                            toast.success("user login")
 
+                        }
+                    })
+                    //  axiosPublic.post('/jwt',{ email:CurretUser?.email})
+                    //  .then(res=>{
+                    //     if(res.data.token){
+                    //         localStorage.setItem('token',res.data.token)
+                    //     }
+                    //  })
+
+                }
             }
-        }
             //  else{
             //     localStorage.removeItem('token')
             //  }
         }))
         return () => unSubscribe()
-    }, [axiosPublic,userdata])
+    }, [axiosPublic, userdata])
     console.log(user)
     const info = {
         signIn,
