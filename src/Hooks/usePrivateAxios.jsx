@@ -1,12 +1,9 @@
 
 import axios from "axios";
 const axiosPrivate = axios.create({
-    // baseURL: 'https://real-state-server-side-fawn.vercel.app',
-    baseURL: "http://localhost:5050",
-    // baseURL: 'https://real-state-server-side-fawn.vercel.app',
-    // timeout: 1000,
-    // headers: {'X-Custom-Header': 'foobar'}
-  });
+    baseURL: import.meta.env.VITE_API_URL || "https://unity-bridge-platform-backend.vercel.app",
+});
+
 const usePrivetAxios = () => {
   axiosPrivate.interceptors.request.use(function (config) {
     // Do something before request is sent
