@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import NavBar from '../ShareCOmponents/NavBar';
+import NavBar from '../ShareComponents/NavBar';
 import Footer from '../Pages/Donor/DonorDiscoveryPortal/Footer';
 
 export default function MainLayOut() {
