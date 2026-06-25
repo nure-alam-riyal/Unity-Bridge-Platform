@@ -28,6 +28,9 @@ import AdminDashboard from "../Pages/Admin/AminDashboard/AdminDashBoard.jsx";
 import Contact from "../Pages/Contact/Contact.jsx";
 import NotFound from "../Pages/NotFound/NotFound.jsx";
 import DonorRelation from "../Pages/NGO/DonorRelation/DonorRelation.jsx";
+import AgentRoute from "./AgentRoute.jsx";
+import AdminRoute from "./AdminRoute.jsx";
+import MyDonation from "../Pages/Volunteer/MyDonation/MyDonation.jsx";
 
 
 export const router = createBrowserRouter([
@@ -53,22 +56,22 @@ export const router = createBrowserRouter([
                 children:[
                     {
                         path:'/ngo',
-                        element:<NgoAdminDashboard></NgoAdminDashboard>
+                        element:<AgentRoute><NgoAdminDashboard></NgoAdminDashboard></AgentRoute>
                     },
                     {
                         path:'/ngo/launchproject',
-                        element:<LaunchProject></LaunchProject>
+                        element:<AgentRoute><LaunchProject></LaunchProject></AgentRoute>
                     },{
                         path:'/ngo/projects',
-                        element:<NGOProjects></NGOProjects>
+                        element:<AgentRoute><NGOProjects></NGOProjects></AgentRoute>
                     },
                     {
                         path:'/ngo/editproject/:id',
-                        element:<UpdateProjects></UpdateProjects>
+                        element:<AgentRoute><UpdateProjects></UpdateProjects></AgentRoute>
                     },
                     {
                         path:"/ngo/volunteer",
-                        element:<VolunteerHub></VolunteerHub>
+                        element:<AgentRoute><VolunteerHub></VolunteerHub></AgentRoute>
 
                     },
                     {
@@ -79,22 +82,25 @@ export const router = createBrowserRouter([
                         element:<EditProfile></EditProfile>
                     },{
                         path:"/ngo/donor-relation",
-                        element:<DonorRelation></DonorRelation>
+                        element:<AgentRoute><DonorRelation></DonorRelation></AgentRoute>
                     }
                     
                 ]
             },
             {
-                path: "/volunteer",
+                path: "/volunteer&donor",
                 element:<NGOLayout></NGOLayout>,
                 children:[
                     {
-                        path:'/volunteer',
+                        path:'/volunteer&donor',
                         element:<VolunteerDonorDashboard></VolunteerDonorDashboard>
                     },
                     {
-                        path:"/volunteer/myprojectlist",
+                        path:"/volunteer&donor/myprojectlist",
                         element:<MyProjectList></MyProjectList>
+                    },{
+                        path:'/volunteer&donor/mydonotion',
+                        element:<MyDonation></MyDonation>
                     }
                     
                 ]
@@ -107,6 +113,10 @@ export const router = createBrowserRouter([
                         path:'/donor',
                         element:<DonorDashboard></DonorDashboard>
                     },
+                    {
+                        path:'/donor/mydonation',
+                        element:<MyDonation></MyDonation>
+                    },
                     
                 ]
             },
@@ -116,22 +126,22 @@ export const router = createBrowserRouter([
                 children:[
                     {
                         path:'/admin',
-                        element:<AdminDashboard></AdminDashboard>
+                        element:<AdminRoute><AdminDashboard></AdminDashboard></AdminRoute>
                     },{
                         path:'/admin/varifyUser',
-                        element:<VarifyUser></VarifyUser>
+                        element:<AdminRoute><VarifyUser></VarifyUser></AdminRoute>
 
                     },
                     {
                         path:"/admin/varifyProject",
-                        element:<VarifyProject></VarifyProject>
+                        element:<AdminRoute><VarifyProject></VarifyProject></AdminRoute>
                     },
                     {
                         path:"/admin/projectlist",
-                        element:<AllProjectList></AllProjectList>
+                        element:<AdminRoute><AllProjectList></AllProjectList></AdminRoute>
                     },{
                         path:"/admin/volunteerlist",
-                        element:<VolunteerdonorList></VolunteerdonorList>
+                        element:<AdminRoute><VolunteerdonorList></VolunteerdonorList></AdminRoute>
                     },
                 ]
             }

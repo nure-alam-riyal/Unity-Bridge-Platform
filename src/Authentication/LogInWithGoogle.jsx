@@ -3,15 +3,17 @@ import useAuth from '../Hooks/useAuth.jsx';
 // import { FcGoogle } from "react-icons/fc";
 import image from '../assets/Image/google.png'
 import toast, { Toaster } from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const LogInWithGoogle = () => {
+    const location=useLocation()
+    const from = location?.state|| '/'
     const {signInGoogle}=useAuth()
     const navigate=useNavigate()
     const handleGoogleSignIn=()=>{
 signInGoogle().then( result=>{
    toast.success("Login Successfull")
-   navigate('/');
+   navigate(from)
 }).catch(error=>{
     toast.error(error.message)  
 })

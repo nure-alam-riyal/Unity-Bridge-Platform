@@ -181,17 +181,17 @@ export default function SideNavigation() {
   const navConfig = {
     'NGO': [
       { label: 'Dashboard', path: '/ngo', icon: <HiOutlineSquares2X2 size={20} /> },
-      { label: 'Impact Tracking', path: '/ngo/impact-tracking', icon: <HiOutlinePresentationChartLine size={20} /> },
+      // { label: 'Impact Tracking', path: '/ngo/impact-tracking', icon: <HiOutlinePresentationChartLine size={20} /> },
       { label: 'Our Projects', path: '/ngo/projects', icon: <HiOutlineClipboardDocumentList size={20} /> },
       { label: 'Donor Relations', path: '/ngo/donor-relation', icon: <HiOutlineHeart size={20} /> },
       { label: 'Volunteer Hub', path: '/ngo/volunteer', icon: <HiOutlineUserGroup size={20} /> },
     ],
     'volunteer&donor': [
-      { label: 'Dashboard', path: '/volunteer', icon: <HiOutlineSquares2X2 size={20} /> },
-      { label: 'Impact Tracking', path: '/', icon: <HiOutlinePresentationChartLine size={20} /> },
-      { label: 'MY Project List', path: '/volunteer/myprojectlist', icon: <HiOutlineClipboardDocumentList size={20} /> },
-      { label: 'Donor Relations', path: '/ngo/donor-relations', icon: <HiOutlineHeart size={20} /> },
-      { label: 'Volunteer Hub', path: '/ngo/volunteer-hub', icon: <HiOutlineUserGroup size={20} /> },
+      { label: 'Dashboard', path: '/volunteer&donor', icon: <HiOutlineSquares2X2 size={20} /> },
+      // { label: 'Impact Tracking', path: '/', icon: <HiOutlinePresentationChartLine size={20} /> },
+      { label: 'MY Project List', path: '/volunteer&donor/myprojectlist', icon: <HiOutlineClipboardDocumentList size={20} /> },
+      { label: 'MY Donotion', path: '/volunteer&donor/mydonotion', icon: <HiOutlineHeart size={20} /> },
+      // { label: 'Volunteer Hub', path: '/ngo/volunteer-hub', icon: <HiOutlineUserGroup size={20} /> },
     ],
     'admin': [
       { label: 'Dashboard', path: '/admin', icon: <HiOutlineSquares2X2 size={20} /> },
@@ -202,6 +202,7 @@ export default function SideNavigation() {
     ],
     "donor":[
         { label: 'Dashboard', path: '/donor', icon: <HiOutlineSquares2X2 size={20} /> },
+        { label: 'MY Donotion', path: '/donor/mydonation', icon: <HiOutlineHeart size={20} /> },
       // { label: 'Verify User', path: '/admin/varifyUser', icon: <HiOutlinePresentationChartLine size={20} /> },
       // { label: 'Project List', path: '/admin/projectlist', icon: <HiOutlineClipboardDocumentList size={20} /> },
       // { label: 'Requested Project', path: '/admin/varifyProject', icon: <HiOutlineHeart size={20} /> },
@@ -252,13 +253,13 @@ export default function SideNavigation() {
             <NavLink
               key={item.label}
               to={item.path}
-              className={({ isActive }) => 
-                `w-full flex items-center gap-3.5 px-3 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all duration-200 text-left
+              className={({ isActive }) => `
+                w-full flex items-center gap-3.5 px-3 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-all duration-200 text-left
                 ${isActive 
-                  ? 'bg-[#EDF4F0] text-[#0D623B]' 
+                  ? 'bg-[#EDF4F0] text-[#0D623B] shadow-sm' 
                   : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                }`
-              }
+                }
+              `}
             >
               {({ isActive }) => (
                 <>

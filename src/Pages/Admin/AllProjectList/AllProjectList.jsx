@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Modal, Button, message, Input, Tag, Pagination } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined, EyeOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, CloseCircleOutlined, EyeOutlined, SearchOutlined, FilePdfOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import usePublicAxios from '../../../Hooks/usePublicAxios';
 import Loading from '../../../components/Loading';
 import ProjectDetails from '../../Project/ProjectDetailPage/ProjectDetails';
@@ -18,7 +20,7 @@ const AllProjectList = () => {
   
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-
+  const [searchText, setSearchText] = useState('');
 
   const { data: projects = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['allGlobalProjectsAdminData'],
@@ -26,7 +28,12 @@ const AllProjectList = () => {
   });
 
  
-  const filteredProjects = projects.filter(project => project?.status !== 'draft');
+  const filteredProjects = projects.filter(project => 
+    project?.status !== 'draft' &&
+    (project?.title?.toLowerCase().includes(searchText.toLowerCase()) ||
+     project?.ngoName?.toLowerCase().includes(searchText.toLowerCase()) ||
+     project?.ngoEmail?.toLowerCase().includes(searchText.toLowerCase()))
+  );
 
   
   const indexOfLastItem = currentPage * pageSize;
@@ -70,6 +77,53 @@ const AllProjectList = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleDownloadPDF = () => {
+    if (filteredProjects.length === 0) {
+      message.warning('No projects to export.');
+      return;
+    }
+
+    const doc = new jsPDF();
+    const tableColumn = ['Project Title', 'NGO Name', 'Description', 'Status'];
+    const tableRows = filteredProjects.map(project => [
+      project.title || 'N/A',
+      project.ngoName || 'N/A',
+      (project.description || 'N/A').substring(0, 40) + '...',
+      project.status || 'N/A'
+    ]);
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+      theme: 'grid',
+      headStyles: {
+        fillColor: [26, 35, 126],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        halign: 'center',
+        fontSize: 10
+      },
+      bodyStyles: {
+        textColor: [0, 0, 0],
+        fontSize: 9
+      },
+      alternateRowStyles: {
+        fillColor: [240, 245, 250]
+      },
+      margin: { top: 40 }
+    });
+
+    doc.setFontSize(16);
+    doc.text('Project Catalog Report', 14, 15);
+    doc.setFontSize(10);
+    doc.text(`Generated: ${new Date().toLocaleDateString('en-GB')}`, 14, 24);
+    doc.text(`Total Projects: ${filteredProjects.length}`, 14, 28);
+
+    doc.save(`Project_Catalog_${new Date().toISOString().split('T')[0]}.pdf`);
+    message.success('PDF downloaded successfully.');
+  };
+
   if (isLoading) return <Loading />;
   if (isError) return <div className="text-center my-10 text-red-500">Error fetching master project logs.</div>;
 
@@ -77,13 +131,36 @@ const AllProjectList = () => {
     <div className="p-4 md:p-8 bg-slate-50 min-h-screen">
       <div className="w-full max-w-6xl mx-auto bg-white shadow-sm rounded-xl border border-slate-100 overflow-hidden">
         
-        <div className="p-5 border-b border-slate-100 bg-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-bold text-slate-800">Master Project Catalog Manager</h2>
-            <p className="text-xs text-slate-400">Auditing visibility matrix for all projects across verification lifecycle stages (Drafts Hidden).</p>
+        <div className="p-5 border-b border-slate-100 bg-white space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-800">Project Catalog Manager</h2>
+              <p className="text-xs text-slate-500 mt-1">Review and verify all projects across the platform (Drafts excluded)</p>
+            </div>
+            <div className="text-xs bg-gradient-to-r from-blue-50 to-indigo-50 text-slate-700 px-4 py-2 rounded-lg font-semibold border border-blue-100 self-start sm:self-center">
+              Total Projects: <span className="text-lg font-bold text-blue-600">{filteredProjects.length}</span>
+            </div>
           </div>
-          <div className="text-xs bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg font-medium self-start sm:self-center">
-            Total Active Projects: <span className="font-bold text-slate-900">{filteredProjects.length}</span>
+          <div className="flex flex-col sm:flex-row gap-3 items-stretch">
+            <Input
+              placeholder="Search by project title, NGO name, or email..."
+              prefix={<SearchOutlined className="text-slate-400" />}
+              value={searchText}
+              onChange={(e) => {
+                setSearchText(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="flex-1 rounded-lg text-sm"
+              allowClear
+            />
+            <Button 
+              type="primary" 
+              icon={<FilePdfOutlined />}
+              onClick={handleDownloadPDF}
+              className="bg-red-600 hover:bg-red-700 border-none rounded-lg font-semibold"
+            >
+              Export PDF
+            </Button>
           </div>
         </div>
 

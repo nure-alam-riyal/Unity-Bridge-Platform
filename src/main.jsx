@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 
-import AuthProvider from './Provider/AuthProvider.jsx'
+import AuthProvider from './Provider/Authprovider.jsx'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './Router/Router.jsx'
 import { Toaster } from 'react-hot-toast'
@@ -16,6 +16,7 @@ const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+
     <QueryClientProvider client={queryClient}>
      <Provider store={store}>
     <AuthProvider>

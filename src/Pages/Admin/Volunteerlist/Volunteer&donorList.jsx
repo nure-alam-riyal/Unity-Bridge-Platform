@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Table, Tabs, Tag, Space, Avatar, Button, message, Popconfirm } from 'antd';
-import { UserOutlined, CalendarOutlined, HeartOutlined, TeamOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Table, Tabs, Tag, Space, Avatar, Button, message, Popconfirm, DatePicker } from 'antd';
+import { UserOutlined, CalendarOutlined, HeartOutlined, TeamOutlined, CheckCircleOutlined, CloseCircleOutlined, FilePdfOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import usePublicAxios from '../../../Hooks/usePublicAxios';
 import Loading from '../../../components/Loading';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import dayjs from 'dayjs';
 
 export default function VolunteerdonorList() {
   const axios = usePublicAxios();
@@ -15,6 +18,7 @@ export default function VolunteerdonorList() {
   const [dPageSize, setDPageSize] = useState(10);
   
   const [isActionLoading, setIsActionLoading] = useState(false);
+  const [dateRange, setDateRange] = useState([null, null]);
 
   // 1. Fetch Global Project Dataset for Admin Workspace View
   const { data: projects = [], isLoading, isError, refetch } = useQuery({
@@ -60,6 +64,98 @@ export default function VolunteerdonorList() {
     }
   };
 
+  // Filter by date range
+  const filterByDateRange = (records) => {
+    if (!dateRange[0] || !dateRange[1]) return records;
+    
+    return records.filter(record => {
+      const recordDate = new Date(record.appliedAt || record.date);
+      const startDate = dateRange[0].toDate();
+      const endDate = dateRange[1].toDate();
+      endDate.setHours(23, 59, 59, 999); // Include entire end date
+      
+      return recordDate >= startDate && recordDate <= endDate;
+    });
+  };
+
+  // PDF Download Handler
+  const handleDownloadPDF = (dataType) => {
+    const isVolunteer = dataType === 'volunteer';
+    const dataSource = isVolunteer ? volunteerDataset : donorDataset;
+    const filteredData = filterByDateRange(dataSource);
+
+    if (filteredData.length === 0) {
+      message.warning('No data to download');
+      return;
+    }
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Title
+    doc.setFontSize(16);
+    const title = isVolunteer ? 'Volunteers & Donors List' : 'Standalone Donors List';
+    doc.text(title, pageWidth / 2, 15, { align: 'center' });
+    
+    // Filter info
+    doc.setFontSize(10);
+    let filterText = `Total Records: ${filteredData.length}`;
+    if (dateRange[0] && dateRange[1]) {
+      filterText += ` | Date Range: ${dateRange[0].format('MMM DD, YYYY')} - ${dateRange[1].format('MMM DD, YYYY')}`;
+    }
+    doc.text(filterText, 14, 25);
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 32);
+
+    // Table data
+    let tableData, columns;
+    
+    if (isVolunteer) {
+      columns = ['Name', 'Email', 'NGO & Project', 'Experience', 'Status'];
+      tableData = filteredData.map(volunteer => [
+        volunteer.name || 'N/A',
+        volunteer.email || 'N/A',
+        `${volunteer.projectTitle}\n(NGO: ${volunteer.ngoName})`,
+        volunteer.experienceText || 'N/A',
+        volunteer.status || 'N/A'
+      ]);
+    } else {
+      columns = ['Name', 'Email', 'NGO & Project', 'Amount', 'Status'];
+      tableData = filteredData.map(donor => [
+        donor.name || 'N/A',
+        donor.email || 'N/A',
+        `${donor.projectTitle}\n(NGO: ${donor.ngoName})`,
+        `$${donor.amount.toLocaleString()}`,
+        donor.status || 'N/A'
+      ]);
+    }
+
+    // Generate table
+    autoTable(doc, {
+      head: [columns],
+      body: tableData,
+      startY: 40,
+      margin: { top: 40, right: 14, bottom: 14, left: 14 },
+      theme: 'grid',
+      headStyles: {
+        fillColor: [54, 92, 206],
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: {
+        fillColor: [245, 245, 245]
+      },
+      columnStyles: {
+        0: { cellWidth: 35 },
+        1: { cellWidth: 45 },
+        2: { cellWidth: 50 }
+      }
+    });
+
+    const fileName = isVolunteer ? 'volunteer-donor-list' : 'standalone-donors-list';
+    doc.save(`${fileName}-${new Date().getTime()}.pdf`);
+    message.success('PDF downloaded successfully!');
+  };
+
   // 2. PARSE ALL PERSONNEL (Using 'volunteer&donor' structural setup mapping)
   const volunteerDataset = projects.reduce((accumulator, project) => {
     if (Array.isArray(project?.volunteerDetails)) {
@@ -86,6 +182,9 @@ export default function VolunteerdonorList() {
     return accumulator;
   }, []);
 
+  // Filter volunteer data by date range
+  const filteredVolunteerDataset = filterByDateRange(volunteerDataset);
+
   // 3. PARSE ALL SEPARATE DONORS (Using standalone 'donor' mapping)
   const donorDataset = projects.reduce((accumulator, project) => {
     if (Array.isArray(project?.donorDetails)) {
@@ -106,6 +205,9 @@ export default function VolunteerdonorList() {
     }
     return accumulator;
   }, []);
+
+  // Filter donor data by date range
+  const filteredDonorDataset = filterByDateRange(donorDataset);
 
   // Dynamic Status Badge Layout Selector Component
   const renderStatusTag = (status) => {
@@ -283,6 +385,51 @@ export default function VolunteerdonorList() {
           <p className="text-xs text-slate-400">Global cross-platform review workspace for monitoring and managing all participating personnel and transactions.</p>
         </div>
 
+        {/* Filter and Download Controls */}
+        <div className="p-4 border-b border-slate-100 bg-slate-50">
+          <div className="flex flex-col md:flex-row gap-4 items-end">
+            {/* Date Range Filter */}
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-slate-700 mb-2">Filter by Date Range</label>
+              <DatePicker.RangePicker
+                value={dateRange}
+                onChange={(dates) => setDateRange(dates || [null, null])}
+                style={{ width: '100%' }}
+                placeholder={['Start Date', 'End Date']}
+                className="rounded-lg"
+              />
+            </div>
+
+            {/* Download Buttons */}
+            <div className="flex gap-2">
+              <Button
+                type="primary"
+                icon={<FilePdfOutlined />}
+                onClick={() => handleDownloadPDF('volunteer')}
+                className="bg-red-600 hover:bg-red-700 border-none rounded"
+                disabled={filteredVolunteerDataset.length === 0}
+              >
+                Download Volunteers
+              </Button>
+              <Button
+                type="primary"
+                icon={<FilePdfOutlined />}
+                onClick={() => handleDownloadPDF('donor')}
+                className="bg-red-600 hover:bg-red-700 border-none rounded"
+                disabled={filteredDonorDataset.length === 0}
+              >
+                Download Donors
+              </Button>
+            </div>
+          </div>
+
+          {/* Results Count */}
+          <div className="text-sm text-slate-600 mt-3">
+            <span>Volunteers & Donors: <span className="font-semibold">{filteredVolunteerDataset.length}</span> of <span className="font-semibold">{volunteerDataset.length}</span> | </span>
+            <span>Standalone Donors: <span className="font-semibold">{filteredDonorDataset.length}</span> of <span className="font-semibold">{donorDataset.length}</span></span>
+          </div>
+        </div>
+
         {/* Tab Panel Segment */}
         <div className="p-4">
           <Tabs 
@@ -293,13 +440,13 @@ export default function VolunteerdonorList() {
                 key: '1',
                 label: (
                   <span className="flex items-center gap-2 px-1 font-medium text-sm">
-                    <TeamOutlined /> All Platform Volunteers & Donors ({volunteerDataset.length})
+                    <TeamOutlined /> All Platform Volunteers & Donors ({filteredVolunteerDataset.length})
                   </span>
                 ),
                 children: (
                   <Table
                     columns={volunteerColumns}
-                    dataSource={volunteerDataset}
+                    dataSource={filteredVolunteerDataset}
                     className="mt-2"
                     pagination={{
                       current: vCurrentPage,
@@ -315,13 +462,13 @@ export default function VolunteerdonorList() {
                 key: '2',
                 label: (
                   <span className="flex items-center gap-2 px-1 font-medium text-sm">
-                    <HeartOutlined /> Standalone Donors ({donorDataset.length})
+                    <HeartOutlined /> Standalone Donors ({filteredDonorDataset.length})
                   </span>
                 ),
                 children: (
                   <Table
                     columns={donorColumns}
-                    dataSource={donorDataset}
+                    dataSource={filteredDonorDataset}
                     className="mt-2"
                     pagination={{
                       current: dCurrentPage,

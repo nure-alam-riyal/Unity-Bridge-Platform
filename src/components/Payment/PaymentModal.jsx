@@ -29,8 +29,9 @@ export default function PaymentModal({ visible, project, user, onClose }) {
         projectId: project?._id,
         amount: customAmount,
         userEmail: user?.email,
-        userName: user?.displayName || 'Anonymous Supporter',
-        cardOnly: isCardOnly
+        userName: user?.userName || 'Anonymous Supporter',
+        cardOnly: isCardOnly,
+        role:user?.role
       };
 
       const response = await axios.post('/payment/initiate', payload);
@@ -82,17 +83,16 @@ export default function PaymentModal({ visible, project, user, onClose }) {
             type="primary"
             icon={<CreditCardOutlined />}
             loading={loadingType === 'card'}
-            onClick={() => handleCheckout(true)} // এখানে true পাস করা মানে সরাসরি কার্ড প্যানেল ওপেন হবে
+            onClick={() => handleCheckout(true)} 
             className="w-full bg-slate-950 border-none font-bold text-xs h-11 rounded-xl"
           >
             Pay via Cards
           </Button>
 
-          {/* ─── মোবাইল ব্যাংকিং বাটন ─── */}
           <Button
             icon={<ThunderboltOutlined className="text-amber-500" />}
             loading={loadingType === 'general'}
-            onClick={() => handleCheckout(false)} // এখানে false পাস করলে সব অপশন দেখাবে
+            onClick={() => handleCheckout(false)}
             className="w-full font-bold text-xs h-11 rounded-xl"
           >
             Mobile Banking / Wallets

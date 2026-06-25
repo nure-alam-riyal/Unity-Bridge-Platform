@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { notification, Typography, Card, Row, Col, Statistic, Table, Tag } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined, WarningOutlined, DollarCircleOutlined, SafetyCertificateOutlined, HistoryOutlined } from '@ant-design/icons';
+import { useSearchParams, Link } from 'react-router-dom';
+import { notification, Typography, Card, Row, Col, Statistic, Table, Tag, Button } from 'antd';
+import { CheckCircleOutlined, CloseCircleOutlined, WarningOutlined, DollarCircleOutlined, SafetyCertificateOutlined, HistoryOutlined, FileTextOutlined } from '@ant-design/icons';
 import useAuth from '../../../Hooks/useAuth';
 import usePublicAxios from '../../../Hooks/usePublicAxios';
 
@@ -77,7 +77,12 @@ export default function DonorDashboard() {
           <Title level={3} className="m-0 font-black">Donor Terminal</Title>
           <Text type="secondary">{user?.email}</Text>
         </div>
-        <Tag color="emerald" className="font-bold py-1 px-3"><SafetyCertificateOutlined /> Gateway Synced</Tag>
+        <div className="flex items-center gap-3">
+          <Tag color="emerald" className="font-bold py-1 px-3"><SafetyCertificateOutlined /> Gateway Synced</Tag>
+          <Link to="/donor/mydonation">
+            <Button type="primary" icon={<FileTextOutlined />} className="bg-blue-600 hover:bg-blue-700">My Donations</Button>
+          </Link>
+        </div>
       </div>
 
       <Row gutter={16}>

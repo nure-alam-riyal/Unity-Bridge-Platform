@@ -6,7 +6,8 @@ import {
   DollarOutlined,
   CloudUploadOutlined,
   TeamOutlined,
-  SearchOutlined
+  SearchOutlined,
+  EnvironmentOutlined
 } from '@ant-design/icons';
 
 import PaymentModal from '../../../components/Payment/PaymentModal';
@@ -21,11 +22,12 @@ const { Option } = Select;
 export default function AllProjects() {
   const onuser = useQuerys({ users: "users" });
   const axios = usePublicAxios();
-  const { user } = useAuth();
+  const user=onuser[0]
 
   const loggedInUserRole = user?.role || onuser[0]?.role || "donor"; 
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [locationSearch, setLocationSearch] = useState('');
   const [sortBy, setSortBy] = useState('default');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(4); 
@@ -108,8 +110,9 @@ console.log(data)
   const verifiedProjects = localProjects?.filter(project => project?.status?.toLowerCase() === 'verified');
 
   const filteredProjects = verifiedProjects?.filter(project => 
-    project?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project?.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    (project?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    project?.description?.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    (project?.location?.toLowerCase().includes(locationSearch.toLowerCase()) || locationSearch === '')
   );
 
   const sortedProjects = [...filteredProjects].sort((a, b) => {
@@ -134,6 +137,16 @@ console.log(data)
             onChange={(e) => {
               setSearchTerm(e.target.value);
               setCurrentPage(1); 
+            }}
+            className="flex-grow h-10 rounded-lg text-sm"
+            allowClear
+          />
+          <Input
+            placeholder="Search by location..."
+            prefix={<EnvironmentOutlined className="text-slate-400" />}
+            onChange={(e) => {
+              setLocationSearch(e.target.value);
+              setCurrentPage(1);
             }}
             className="flex-grow h-10 rounded-lg text-sm"
             allowClear
@@ -183,7 +196,7 @@ console.log(data)
 
                   <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
                     <img
-                      src='https://thumbs.dreamstime.com/b/pure-clean-drinking-water-nature-drinkable-fresh-clean-water-sources-119206462.jpg'
+                      src={project?.projectImages?.[0] || 'https://thumbs.dreamstime.com/b/pure-clean-drinking-water-nature-drinkable-fresh-clean-water-sources-119206462.jpg'}
                       alt={project?.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -215,10 +228,17 @@ console.log(data)
                       </div>
                     </div>
 
+                    {project?.location && (
+                      <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mb-4 pb-3 border-b border-slate-100">
+                        <EnvironmentOutlined className="text-[#2A7F62]" />
+                        <span className="font-medium">{project.location}</span>
+                      </div>
+                    )}
+
                     <div className="flex flex-col gap-2 mt-auto">
                       
                       {/* Volunteer Request Button */}
-                      {onuser[0]?.role === "volunteer&donar" && (
+                      {onuser[0]?.role === "volunteer&donor" && (
                         <Button
                           type="primary"
                           icon={<CloudUploadOutlined />}
@@ -238,7 +258,7 @@ console.log(data)
                       <div className={isAdminOrNGO ? "w-full" : "grid grid-cols-2 gap-2"}>
                         
                         {/* Donate Now Button */}
-                        {(onuser[0]?.role === "volunteer&donar" || onuser[0]?.role === "donor") && (
+                        {(onuser[0]?.role === "volunteer&donor" || onuser[0]?.role === "donor") && (
                           <Button 
                             type="default" 
                             icon={<DollarOutlined className="text-emerald-600" />} 
