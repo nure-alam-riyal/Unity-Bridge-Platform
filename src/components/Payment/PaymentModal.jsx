@@ -31,7 +31,7 @@ export default function PaymentModal({ visible, project, user, onClose }) {
         userEmail: user?.email,
         userName: user?.userName || 'Anonymous Supporter',
         cardOnly: isCardOnly,
-        role:user?.role
+        role: user?.role
       };
 
       const response = await axios.post('/payment/initiate', payload);
@@ -83,7 +83,7 @@ export default function PaymentModal({ visible, project, user, onClose }) {
             type="primary"
             icon={<CreditCardOutlined />}
             loading={loadingType === 'card'}
-            onClick={() => handleCheckout(true)} 
+            onClick={() => handleCheckout(true)}
             className="w-full bg-slate-950 border-none font-bold text-xs h-11 rounded-xl"
           >
             Pay via Cards

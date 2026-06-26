@@ -75,8 +75,8 @@ export default function AuthProvider({ children }) {
                     image: Currentuser?.photoURL,
                     role: userdata?.role || 'volunteer&donor',
                     NIDorBRITH: userdata?.NIDorBRITH,
-                    LicenseNumber: userdata?.LicenseNumber
-
+                    LicenseNumber: userdata?.LicenseNumber,
+                    phone: userdata?.phone || null,
                 }
                 console.log(userInfo)
                 if (userInfo?.email && userInfo?.userName && userInfo?.role) {

@@ -87,7 +87,7 @@ console.log(data)
     };
 
     setLocalProjects(prevProjects => 
-      prevProjects.map(p => p._id === projectId ? { ...p, volunteerCount: updatedCount, volunteerEmail: [...currentEmails, user.email], volunteerDetails: [...currentDetails, newApplication] } : p)
+      prevProjects?.map(p => p._id === projectId ? { ...p, volunteerCount: updatedCount, volunteerEmail: [...currentEmails, user.email], volunteerDetails: [...currentDetails, newApplication] } : p)
     );
 
     try {
