@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import LogInWithGoogle from '../LogInWithGoogle';
 import toast from 'react-hot-toast';
 import { FaEye, FaEyeSlash } from 'react-icons/fa6';
-import { motion } from 'framer-motion'; 
+import { motion } from 'framer-motion';
 import useAuth from '../../Hooks/useAuth';
 import { useDispatch } from 'react-redux';
 import { setUserData } from '../../Redux-Toolkit/Slices/userSlice.jsx';
@@ -17,13 +17,13 @@ const Registration = () => {
   const [error, SetError] = useState('');
   const { register, handleSubmit, watch } = useForm();
 
- 
+
   const selectedRole = watch("role", "volunteer&donor");
 
   const onSubmit = (data) => {
     SetError('');
     const { password } = data;
-    
+
     const passA = /(?=.*[A-Z])/;
     const passa = /(?=.*[a-z])/;
     const pass6 = /(?=.*[0-9])/;
@@ -50,7 +50,7 @@ const Registration = () => {
     // ─── 🚀 FIREBASE AUTH LOOP ───
     createUser(data?.email, data?.password)
       .then((result) => {
-      
+
         updateData(setUserData({
           email: data?.email,
           userName: data?.name,
@@ -59,37 +59,37 @@ const Registration = () => {
           LicenseNumber: data?.LicenseNumber || 'N/A'
         }));
 
-       navigate('/'); 
+        navigate('/');
         updateProfile(data?.name, "")
           .then(() => {
             toast.dismiss(loadingToast);
             toast.success("Welcome aboard! Registration completed successfully.");
-            navigate('/'); 
+            navigate('/');
           })
           .catch((err) => {
             toast.dismiss(loadingToast);
             console.error(err);
-            navigate('/'); 
+            navigate('/');
           });
       })
       .catch((error) => {
         toast.dismiss(loadingToast);
         toast.error(error.message || "Authentication routing rejected.");
-         navigate('/'); 
+        navigate('/');
       });
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-slate-100 flex items-center justify-center p-4 md:p-10 overflow-hidden relative">
-      
-     
+
+
       <div className="absolute top-10 left-10 w-72 h-72 bg-emerald-200/40 rounded-full blur-3xl opacity-70 animate-pulse" />
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-teal-200/30 rounded-full blur-3xl opacity-60 animate-pulse delay-700" />
 
       <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
-        
-      
-        <motion.div 
+
+
+        <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
@@ -112,16 +112,16 @@ const Registration = () => {
           </div>
         </motion.div>
 
-        
-        <motion.div 
+
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="lg:col-span-7 bg-white/80 backdrop-blur-md border border-slate-100 shadow-2xl rounded-3xl p-6 md:p-8 w-full max-w-xl mx-auto"
         >
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            
-         
+
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="form-control">
                 <label className="label text-xs font-bold text-slate-500">Full Name</label>
@@ -133,7 +133,7 @@ const Registration = () => {
               </div>
             </div>
 
-          
+
             <div className="form-control">
               <label className="label text-xs font-bold text-slate-500">Select Identity Path</label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
@@ -152,13 +152,13 @@ const Registration = () => {
               </div>
             </div>
 
-           
+
             <div className="form-control">
               <label className="label text-xs font-bold text-slate-500">NID / Birth Registration Number</label>
               <input type="number" required {...register("NIDorBRITH")} className="input input-bordered bg-white focus:border-emerald-500 focus:outline-none rounded-xl text-sm text-slate-800" placeholder="Ex: 1998xxxxxxxxxxxxx" />
             </div>
 
-         
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="form-control">
                 <label className="label text-xs font-bold text-slate-500">Secure Password</label>
@@ -169,7 +169,7 @@ const Registration = () => {
                   </button>
                 </div>
               </div>
-              
+
               <div className="form-control">
                 <label className="label text-xs font-bold text-slate-500">Confirm Password</label>
                 <div className="relative">
@@ -182,12 +182,12 @@ const Registration = () => {
               </div>
             </div>
 
-          
+
             <div className="form-control pt-2 space-y-3">
               <button type="submit" className="btn bg-slate-900 hover:bg-slate-800 text-white border-none font-bold rounded-xl w-full h-11 shadow-lg shadow-slate-200 transition-all">
                 Complete Registration
               </button>
-              
+
               <div className="relative flex items-center justify-center py-1">
                 <div className="border-t border-slate-100 w-full absolute z-0" />
                 <span className="bg-white px-3 text-[10px] text-slate-400 font-bold uppercase tracking-wider relative z-10">Or Connect Via</span>
