@@ -60,7 +60,7 @@ export default function ProjectDetails({ visible, onClose, projectData }) {
       {/* HERO BANNER COVER TIMELINE SEGMENT */}
       <div 
         className="relative bg-slate-900 px-6 py-16 md:p-12 flex flex-col justify-end min-h-[340px] text-white bg-cover bg-center"
-        style={{ backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(15,23,42,0.95)), url(${projectImages[0]})` }}
+        style={{ backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(15,23,42,0.95)), url(${projectImages[projectImages.length-1]})` }}
       >
         <div className="max-w-3xl space-y-3">
           <div className="flex flex-wrap gap-2">

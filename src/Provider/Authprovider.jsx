@@ -62,31 +62,36 @@ export default function AuthProvider({ children }) {
 
 
 
-    useEffect(() => {
-        const unSubscribe = onAuthStateChanged(auth, (Currentuser => {
-
+    useEffect( () => {
+        const unSubscribe = onAuthStateChanged(auth, ( async(Currentuser) => {
+                                   await  userdata
             // console.log(Currentuser)
             setLoading(false)
-
+                                userdata
             if (Currentuser) {
                 const userInfo = {
                     email: Currentuser?.email,
                     userName: Currentuser?.displayName || userdata?.userName || "Unknown",
                     image: Currentuser?.photoURL,
-                    role: userdata?.role || 'volunteer&donor',
+                    role: userdata?.role ||"donor",
                     NIDorBRITH: userdata?.NIDorBRITH,
                     LicenseNumber: userdata?.LicenseNumber,
                     phone: userdata?.phone || null,
                 }
                 console.log(userInfo)
                 if (userInfo?.email && userInfo?.userName && userInfo?.role) {
-                    setUser(userInfo)
+                   setUser(userInfo)
                     axiosPublic.post('users', userInfo).then(res => {
                         if (res.data.insertedId) {
                             toast.success("user login")
 
                         }
                     })
+                    
+                   
+        }
+         else {
+            setUser(null);
                     //  axiosPublic.post('/jwt',{ email:CurretUser?.email})
                     //  .then(res=>{
                     //     if(res.data.token){

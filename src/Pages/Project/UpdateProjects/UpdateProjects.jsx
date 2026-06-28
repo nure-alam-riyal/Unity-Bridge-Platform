@@ -11,7 +11,7 @@ import usePublicAxios from '../../../Hooks/usePublicAxios';
 import Loading from '../../../components/Loading';
 import { useParams } from 'react-router-dom';
 import useAuth from '../../../Hooks/useAuth';
-import { useImage } from '../../../Hooks/useImage'; // useImage ইম্পোর্ট করা হলো
+import { useImage } from '../../../Hooks/useImage'; 
 
 export default function UpdateProjects() {
   const { user } = useAuth();
@@ -22,7 +22,7 @@ export default function UpdateProjects() {
   const [skills, setSkills] = useState([]);
   const [skillInput, setSkillInput] = useState('');
   const [submitType, setSubmitType] = useState('publish'); 
-  const [isSubmitting, setIsSubmitting] = useState(false); // সাবমিট লোডিং স্টেট
+  const [isSubmitting, setIsSubmitting] = useState(false); 
 
   // Fetch individual project data payload 
   const { data, isLoading } = useQuery({
@@ -36,7 +36,24 @@ export default function UpdateProjects() {
   // Synchronize form internal state with asynchronous query responses
   useEffect(() => {
     if (data) {
-      form.setFieldsValue(data);
+      // আগের ইমেজের URL গুলোকে Ant Design Upload-এর উপযোগী fileList ফরমেটে রূপান্তর করা হলো
+      const formattedMedia = data.projectImages?.map((url, index) => ({
+        uid: `- ${index}`,
+        name: `Existing Image ${index + 1}`,
+        status: 'done',
+        url: url,
+      })) || [];
+
+      form.setFieldsValue({
+        title: data.title,
+        description: data.description,
+        budget: data.budget,
+        timeline: data.timeline,
+        volunteerCount: data.volunteerCount,
+        impactMetric: data.impactMetric,
+        media: formattedMedia // ফর্মে আগের ইমেজগুলো প্রিভিউ করানোর জন্য
+      });
+
       if (data.requiredSkills) {
         setSkills(data.requiredSkills);
       }
@@ -51,7 +68,7 @@ export default function UpdateProjects() {
   const handleBeforeUpload = (file) => {
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      message.error(`${file.name} ফাইলটি ২MB এর চেয়ে বড়!`);
+      message.error(`${file.name} is larger than 2MB!`);
       return Upload.LIST_IGNORE;
     }
     return false; 
@@ -79,11 +96,17 @@ export default function UpdateProjects() {
     let uploadedImageUrls = [];
 
     try {
+      const currentMedia = values.media || [];
       
-      if ( values.media.length > 0) {
+      // নতুন ফাইল (যা আগে আপলোড করা ছিল না এবং নতুন করে সিলেক্ট করা হয়েছে) ফিল্টার করা
+      const newFiles = currentMedia.filter(file => file.originFileObj);
+      // যেগুলো আগে থেকেই আপলোড করা আছে (যার .url প্রোপার্টি বিদ্যমান)
+      const existingUrls = currentMedia.filter(file => file.url).map(file => file.url);
+
+      if (newFiles.length > 0) {
         message.loading({ content: 'Uploading new project images...', key: 'uploading' });
         
-        const uploadPromises = values.media.map(async (file) => {
+        const uploadPromises = newFiles.map(async (file) => {
           return await useImage(file.originFileObj);
         });
 
@@ -93,10 +116,13 @@ export default function UpdateProjects() {
 
       const { media, ...restValues } = values;
 
-     
-      const finalImages = uploadedImageUrls.length > 0 
-        ? uploadedImageUrls 
-        : (data?.projectImages || ['https://thumbs.dreamstime.com/b/pure-clean-drinking-water-nature-drinkable-fresh-clean-water-sources-119206462.jpg']);
+      // আগের এক্সিস্টিং ইমেজ এবং নতুন আপলোড হওয়া ইমেজের কম্বিনেশন তৈরি
+      let finalImages = [...existingUrls, ...uploadedImageUrls];
+
+      // যদি কোনো ইমেজই না থাকে তবে ডিফল্ট ইমেজ প্লেসহোল্ডার বসবে
+      if (finalImages.length === 0) {
+        finalImages = [data?.projectImages?.[0] || 'https://thumbs.dreamstime.com/b/pure-clean-drinking-water-nature-drinkable-fresh-clean-water-sources-119206462.jpg'];
+      }
 
       const updatedPayload = {
         ...restValues,
@@ -224,7 +250,7 @@ export default function UpdateProjects() {
             </div>
           </div>
 
-          {/* SECTION 3: Project Media (Multiple Upload & 2MB limit  */}
+          {/* SECTION 3: Project Media */}
           <div>
             <h3 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2 mb-4">
               Project Media
