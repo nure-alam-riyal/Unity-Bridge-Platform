@@ -174,8 +174,8 @@ import useQuerys from '../../Hooks/useQuerys';
 export default function SideNavigation() {
   const oneuser = useQuerys({ users: "users" }) || [];
   const userData = oneuser[0] || {};
-  
-  const { userName, image, role } = userData;
+  console.log(userData)
+  const { name, image, role } = userData;
 
   // 1. Group custom operational matrices cleanly by individual role strings
   const navConfig = {
@@ -235,7 +235,7 @@ export default function SideNavigation() {
           </div>
           <div className="flex flex-col min-w-0">
             <span className="font-bold text-slate-900 text-sm tracking-tight truncate">
-              {userName || 'Anonymous'}
+              {name || 'Anonymous'}
             </span>
             <div className="flex items-center gap-1 text-slate-500 text-[11px] font-medium mt-0.5">
               <MdVerified className="text-[#2A7F62] text-xs flex-shrink-0" />

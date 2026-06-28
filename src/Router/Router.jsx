@@ -1,36 +1,61 @@
 import { createBrowserRouter } from "react-router-dom";
-import MainLayOut from "../LayOut/MainLayOut.jsx";
-import Home from "../Pages/HomePage/Home.jsx";
-import Login from "../Authentication/AuthenticationPages/Login.jsx";
-import Registration from "../Authentication/AuthenticationPages/Registration.jsx";
+import NGOLayout from "../LayOut/NGOLayout/NGOLayout";
+import ProjectDetails from "../Pages/Project/ProjectDetailPage/ProjectDetails";
+import AllProjects from "../Pages/Project/Allprojects/AllProjects";
+import Home from "../Pages/HomePage/Home";
+import AgentRoute from "./AgentRoute";
+import MainLayOut from '../LayOut/MainLayOut'
+import NGOProjects from "../Pages/NGO/NGOProject/NGOProjects";
+import UpdateProjects from "../Pages/Project/UpdateProjects/UpdateProjects";
+import VolunteerHub from "../Pages/NGO/CollaborationDiscoveryBoard/VolunteerHub/VolunteerHub";
+import EditProfile from "../components/Sattings/EditProfile";
+import LaunchProject from "../Pages/NGO/LaunchProject/LaunchProject";
+import VolunteerDonorDashboard from "../Pages/Volunteer/VolunteerDashboard/VolunteerDonorDashboard";
+import MyProjectList from "../Pages/Volunteer/MyProjectList/MyProjectList";
+import MyDonation from "../Pages/Volunteer/MyDonation/MyDonation";
+import AdminRoute from "./AdminRoute";
+import AllProjectList from "../Pages/Admin/AllProjectList/AllProjectList";
+import VolunteerdonorList from "../Pages/Admin/Volunteerlist/Volunteer&donorList";
+// import NgoAdminDashboard from '../Pages/NGO/NGOAdminDashboard.jsx'
+// import MainLayOut from "../LayOut/MainLayOut.jsx";
+// import Home from "../Pages/HomePage/Home.jsx";
+// import Login from "../Authentication/AuthenticationPages/Login.jsx";
+// import Registration from "../Authentication/AuthenticationPages/Registration.jsx";
 import About from "../Pages/About/about.jsx";
-import NGOLayout from "../LayOut/NGOLayout/NGOLayout.jsx";
+// import NGOLayout from "../LayOut/NGOLayout/NGOLayout.jsx";
 import NgoAdminDashboard from "../Pages/NGO/NGOAdminDashboard.jsx/NgoAdminDashboard.jsx";
-import LaunchProject from "../Pages/NGO/LaunchProject/LaunchProject.jsx";
-import NGOProjects from "../Pages/NGO/NGOProject/NGOProjects.jsx";
-import AllProjects from "../Pages/Project/Allprojects/AllProjects.jsx";
-import UpdateProjects from "../Pages/Project/UpdateProjects/UpdateProjects.jsx";
-import ProjectDetails from "../Pages/Project/ProjectDetailPage/ProjectDetails.jsx";
-import VolunteerDonorLayOut from "../LayOut/Volunteer&DonorLayOut/VolunteerDonorLayOut.jsx";
-import VolunteerDashboard from "../Pages/Volunteer/VolunteerDashboard/VolunteerDonorDashboard.jsx";
-import DonorLayout from "../LayOut/DonorLayOut/DonorLayout.jsx";
-import DonorDashboard from "../Pages/Donor/DonorDashboard/DonorDashboard.jsx";
-import MyProjectList from "../Pages/Volunteer/MyProjectList/MyProjectList.jsx";
+import Sattings from "../components/Sattings/Sattings";
+import DonorRelation from "../Pages/NGO/DonorRelation/DonorRelation";
+import DonorDashboard from "../Pages/Donor/DonorDashboard/DonorDashboard";
+import AdminDashboard from "../Pages/Admin/AminDashboard/AdminDashBoard";
+
+// import LaunchProject from "../Pages/NGO/LaunchProject/LaunchProject.jsx";
+// import NGOProjects from "../Pages/NGO/NGOProject/NGOProjects.jsx";
+// import AllProjects from "../Pages/Project/Allprojects/AllProjects.jsx";
+// import UpdateProjects from "../Pages/Project/UpdateProjects/UpdateProjects.jsx";
+// import ProjectDetails from "../Pages/Project/ProjectDetailPage/ProjectDetails.jsx";
+// import VolunteerDonorLayOut from "../LayOut/Volunteer&DonorLayOut/VolunteerDonorLayOut.jsx";
+// import VolunteerDashboard from "../Pages/Volunteer/VolunteerDashboard/VolunteerDonorDashboard.jsx";
+// import DonorLayout from "../LayOut/DonorLayOut/DonorLayout.jsx";
+// import DonorDashboard from "../Pages/Donor/DonorDashboard/DonorDashboard.jsx";
+// import MyProjectList from "../Pages/Volunteer/MyProjectList/MyProjectList.jsx";
 import VarifyUser from "../Pages/Admin/VarifyUser/VarifyUser.jsx";
 import VarifyProject from "../Pages/Admin/VarifyProject/VarifyProject.jsx";
-import AllProjectList from "../Pages/Admin/AllProjectList/AllProjectList.jsx";
-import VolunteerHub from "../Pages/NGO/CollaborationDiscoveryBoard/VolunteerHub/VolunteerHub.jsx";
-import VolunteerdonorList from "../Pages/Admin/Volunteerlist/Volunteer&donorList.jsx";
-import Sattings from "../components/Sattings/Sattings.jsx";
-import EditProfile from "../components/Sattings/EditProfile.jsx";
-import VolunteerDonorDashboard from "../Pages/Volunteer/VolunteerDashboard/VolunteerDonorDashboard.jsx";
-import AdminDashboard from "../Pages/Admin/AminDashboard/AdminDashBoard.jsx";
+import Registration from "../Authentication/AuthenticationPages/Registration.jsx";
+import Login from "../Authentication/AuthenticationPages/Login.jsx";
+// import AllProjectList from "../Pages/Admin/AllProjectList/AllProjectList.jsx";
+// import VolunteerHub from "../Pages/NGO/CollaborationDiscoveryBoard/VolunteerHub/VolunteerHub.jsx";
+// import VolunteerdonorList from "../Pages/Admin/Volunteerlist/Volunteer&donorList.jsx";
+// import Sattings from "../components/Sattings/Sattings.jsx";
+// import EditProfile from "../components/Sattings/EditProfile.jsx";
+// import VolunteerDonorDashboard from "../Pages/Volunteer/VolunteerDashboard/VolunteerDonorDashboard.jsx";
+// import AdminDashboard from "../Pages/Admin/AminDashboard/AdminDashBoard.jsx";
 import Contact from "../Pages/Contact/Contact.jsx";
 import NotFound from "../Pages/NotFound/NotFound.jsx";
-import DonorRelation from "../Pages/NGO/DonorRelation/DonorRelation.jsx";
-import AgentRoute from "./AgentRoute.jsx";
-import AdminRoute from "./AdminRoute.jsx";
-import MyDonation from "../Pages/Volunteer/MyDonation/MyDonation.jsx";
+// import DonorRelation from "../Pages/NGO/DonorRelation/DonorRelation.jsx";
+// import AgentRoute from "./AgentRoute.jsx";
+// import AdminRoute from "./AdminRoute.jsx";
+// import MyDonation from "../Pages/Volunteer/MyDonation/MyDonation.jsx";
 
 
 export const router = createBrowserRouter([
@@ -40,7 +65,7 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: "/",
-                element: <Home />
+                element: <Home/>
             },
             {
                 path: "/projects",
@@ -144,7 +169,15 @@ export const router = createBrowserRouter([
                         element:<AdminRoute><VolunteerdonorList></VolunteerdonorList></AdminRoute>
                     },
                 ]
-            }
+            },
+    {
+        path: "/about",
+        element: <About></About>
+    },
+    {
+        path:'/contact',
+        element:<Contact></Contact>
+    },
         ]
     }
     , {
@@ -155,14 +188,6 @@ export const router = createBrowserRouter([
     {
         path: "/login",
         element: <Login></Login>
-    },
-    {
-        path: "/about",
-        element: <About></About>
-    },
-    {
-        path:'/contact',
-        element:<Contact></Contact>
     },{
         path:"*",
         element:<NotFound></NotFound>

@@ -13,6 +13,7 @@ import {
 import { Link } from 'react-router-dom';
 import ProjectDetails from '../../Project/ProjectDetailPage/ProjectDetails';
 import ProjectApplication from '../Projectaplication/ProjectApplication';
+import useQuerys from '../../../Hooks/useQuerys';
 
 export default function NGOProjects() {
   const axios = usePublicAxios();
@@ -27,11 +28,18 @@ export default function NGOProjects() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(6);
 
+  // 1. Fetching user database profile
+  const oneuser = useQuerys({ users: "users" });
+  const email = oneuser[0]?.email;
+console.log(email)
+  // 2. DEPENDENT QUERY FIX: The hook is locked in 'idle' status until dynamic context variable holds value
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['todos'],
-    queryFn: () => axios.get('projects').then(res => res.data)
+    queryKey: ['projects', email],
+    queryFn: () => axios.get(`projects`).then(res => res.data),
+    
   });
-
+const projects= data?.filter((p)=>email==p.ngoEmail)
+console.log(projects)
   const handlePublish = async (project) => {
     setIsPublishing(true);
     try {
@@ -55,10 +63,11 @@ export default function NGOProjects() {
     }
   };
 
-  if (isLoading) return <Loading />;
+  // Safe fallback triggers while waiting for asynchronous state dependencies to load
+  if (!email || isLoading) return <Loading />;
   if (isError) return <div className="text-center my-10 text-red-500">Error loading projects list.</div>;
 
-  const filteredData = data?.filter((project) => {
+  const filteredData = projects?.filter((project) => {
     const matchesSearch = project?.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           project?.description?.toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -165,7 +174,7 @@ export default function NGOProjects() {
 
                 <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
                   <img
-                    src='https://thumbs.dreamstime.com/b/pure-clean-drinking-water-nature-drinkable-fresh-clean-water-sources-119206462.jpg'
+                    src={`${project.projectImages[project.projectImages.length-1]}`||'https://thumbs.dreamstime.com/b/pure-clean-drinking-water-nature-drinkable-fresh-clean-water-sources-119206462.jpg'}
                     alt={project?.title}
                     className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500 ease-out"
                   />

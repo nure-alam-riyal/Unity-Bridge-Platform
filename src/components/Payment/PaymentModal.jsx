@@ -3,7 +3,6 @@ import { Modal, Button, Divider, InputNumber, message } from 'antd';
 import { CreditCardOutlined, ThunderboltOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import usePublicAxios from '../../Hooks/usePublicAxios';
 
-
 export default function PaymentModal({ visible, project, user, onClose }) {
   const axios = usePublicAxios();
   const [loadingType, setLoadingType] = useState(null);
@@ -37,9 +36,10 @@ export default function PaymentModal({ visible, project, user, onClose }) {
       const response = await axios.post('/payment/initiate', payload);
       if (response.data?.url) {
         message.loading("Opening secure SSLCommerz checkout panel...", 1.5);
+        // Safely redirect window domain pointer to third-party interface node
         window.location.replace(response.data.url);
       } else {
-        throw new Error("Failed to catch endpoint mapping.");
+        throw new Error("Missing callback path routing matrix definitions.");
       }
     } catch (error) {
       message.error("Could not mount checkout window session.");

@@ -13,9 +13,10 @@ const Login = () => {
   const [eye, setEye] = useState(true);
   const { signIn } = useAuth();
   const navigate = useNavigate();
-  // const from = location.state?.from?.pathname || "/";
+  const from = location.state?.from?.pathname || "/";
   const { register, handleSubmit } = useForm();
-const from = location?.state || '/'
+ 
+// const from = location?.state || '/'
   const onSubmit = (data) => {
     signIn(data?.email, data?.password)
       .then(() => {

@@ -196,7 +196,7 @@ console.log(data)
 
                   <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
                     <img
-                      src={project?.projectImages?.[0] || 'https://thumbs.dreamstime.com/b/pure-clean-drinking-water-nature-drinkable-fresh-clean-water-sources-119206462.jpg'}
+                      src={project?.projectImages?.[project?.projectImages?.length-1] || 'https://thumbs.dreamstime.com/b/pure-clean-drinking-water-nature-drinkable-fresh-clean-water-sources-119206462.jpg'}
                       alt={project?.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />

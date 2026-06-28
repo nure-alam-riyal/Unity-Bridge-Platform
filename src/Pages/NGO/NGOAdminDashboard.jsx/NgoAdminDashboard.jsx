@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Row, Col, Statistic, Table, Tag, Empty, Spin } from 'antd';
 import { 
   ArrowUpOutlined, 
@@ -11,8 +11,12 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { useQuery } from '@tanstack/react-query';
 import usePublicAxios from '../../../Hooks/usePublicAxios';
 import { FaBangladeshiTakaSign } from 'react-icons/fa6';
+import useQuerys from '../../../Hooks/useQuerys';
+import Loading from '../../../components/Loading';
 
 const formatCompactNumber = (number) => {
+
+
   if (number == null || isNaN(number)) return '0';
   return new Intl.NumberFormat('en-US', {
     notation: 'compact',
@@ -22,8 +26,57 @@ const formatCompactNumber = (number) => {
 };
 
 export default function NgoAdminDashboard() {
+  
   const axios = usePublicAxios();
+const oneuser = useQuerys({ users: "users" });
+  const ngoEmail = oneuser?.[0]?.email;
+ const [recenProjects, setRecentProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+  if (!ngoEmail) return;
 
+  setLoading(true);
+
+  axios.get("projects")
+    .then((res) => {
+      const data = res.data.recentProjects || res.data || [];
+
+      // Projects of this NGO
+      const ngoProjects = data.filter(
+        (project) => project.ngoEmail === ngoEmail
+      );
+
+      // Total Budget
+      const total = ngoProjects.reduce(
+        (sum, project) => sum + (project.budget || 0),
+        0
+      );
+
+      // Total Fund Raised
+      const fundRaised = ngoProjects.reduce((sum, project) => {
+        const donation = (project.donorDetails || []).reduce(
+          (donorSum, donor) => donorSum + (donor.amount || 0),
+          0
+        );
+        return sum + donation;
+      }, 0);
+
+      setRecentProjects({
+        total,
+        fundRaised,
+        dept: total - fundRaised,
+      });
+
+      setLoading(false);
+    })
+    
+.catch((err) => {
+        setLoading(false);
+      });
+  }, [ngoEmail, axios]);
+  console.log(recenProjects)
+if(loading)
+  <Loading></Loading>
   const { data: dashboardData, isLoading } = useQuery({
     queryKey: ['ngoDashboardStats'],
     queryFn: async () => {
@@ -31,23 +84,10 @@ export default function NgoAdminDashboard() {
       return response.data;
     }
   });
+console.log(dashboardData)
+  const stats = dashboardData?.stats
 
-  const stats = dashboardData?.stats || {
-    totalDonations: 48250,
-    activeVolunteers: 142,
-    runningProjects: 12,
-    impactReached: 3400
-  };
-
-  const chartData = dashboardData?.chartData || [
-    { month: 'Jan', donations: 4000, reached: 2400 },
-    { month: 'Feb', donations: 3000, reached: 1398 },
-    { month: 'Mar', donations: 9800, reached: 2000 },
-    { month: 'Apr', donations: 2780, reached: 2780 },
-    { month: 'May', donations: 1890, reached: 4800 },
-    { month: 'Jun', donations: 2390, reached: 3800 },
-  ];
-
+  const chartData = dashboardData?.chartData
   const projectColumns = [
     {
       title: 'PROJECT NAME',
@@ -72,12 +112,7 @@ export default function NgoAdminDashboard() {
     }
   ];
 
-  const recentProjects = dashboardData?.recentProjects || [
-    { key: '1', name: 'Clean Water Sabar Initiative', budget: 12000, status: 'Active' },
-    { key: '2', name: 'Winter Clothing Drive 2026', budget: 4500, status: 'Completed' },
-    { key: '3', name: 'IT Literacy Bootcamps', budget: 8500, status: 'Active' },
-  ];
-
+  const recentProjects = dashboardData?.recentProjects
   if (isLoading) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-slate-50">
@@ -119,11 +154,22 @@ export default function NgoAdminDashboard() {
             <div className="absolute top-0 left-0 w-1 h-full bg-emerald-600"></div>
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Funds Raised</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-green-400">Total Funds Raised</p>
+                <h3 className="text-2xl font-black text-green-800 mt-2 flex items-center">
+                  <FaBangladeshiTakaSign className="text-emerald-600 mr-1 text-xl" />
+                  {recenProjects?.fundRaised}
+                </h3>
+                <p className="text-xs font-bold mt-2 uppercase tracking-wider text-slate-400">Total Budget</p>
                 <h3 className="text-2xl font-black text-slate-800 mt-2 flex items-center">
                   <FaBangladeshiTakaSign className="text-emerald-600 mr-1 text-xl" />
-                  {stats.totalDonations.toLocaleString()}
+                  {recenProjects?.total}
                 </h3>
+                <p className="text-xs mt-2 text-red-600 font-bold uppercase tracking-wider ">Total Need</p>
+                <h3 className="text-2xl text-red-600 font-black  w-full flex items-center">
+                  <FaBangladeshiTakaSign className="text-emerald-600 mr-1 text-xl" />
+                  {recenProjects?.dept}
+                </h3>
+
               </div>
               <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
                 <DollarCircleOutlined className="text-xl" />
